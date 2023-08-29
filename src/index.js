@@ -1,14 +1,17 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const userRoutes = require('./user/userRoutes');
+const authRoutes = require('./auth/authRoutes');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use(express.json());
+
+app.use(userRoutes);
+app.use(authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}!`);
