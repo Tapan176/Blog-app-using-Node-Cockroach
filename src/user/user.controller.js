@@ -1,4 +1,4 @@
-const service = require('./user.services');
+const service = require('./user.service');
 
 module.exports = {
     getAllUserDetails: async (request, response, next) => {
