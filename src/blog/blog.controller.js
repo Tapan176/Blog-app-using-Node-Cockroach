@@ -39,7 +39,36 @@ module.exports = {
             next(error);
         }
     },
-    deleteArticle: async (request, response, next) => {},
-    searchArticle: async (request, response, next) => {},
-    searchArticleByCategory: async (request, response, next) => {},
+    deleteArticle: async (request, response, next) => {
+        try {
+            const userId = request.session.user.id;
+            const blogId = request.params.id;
+            const responseBody = await services.deleteArticle(blogId, userId);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    searchArticle: async (request, response, next) => {
+        try {
+            const searchString = request.query.searchString;
+            const responseBody = await services.searchArticle(searchString);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    applyFiltersOnBlogs: async (request, response, next) => {
+        try {
+            const categoryId = request.query.categoryId;
+            const publishedAfter = request.query.publishedAfter;
+            const totalLikes = request.query.totalLikes;
+            const totalDislikes = request.query.totalDislikes;
+
+            const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, totalLikes, totalDislikes);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
 };

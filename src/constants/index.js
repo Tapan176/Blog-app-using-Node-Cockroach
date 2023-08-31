@@ -5,9 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const { errorHandler } = require('../middleware/error');
 
-const userRoutes = require('../user/user.route');
-const authRoutes = require('../auth/auth.route');
-const blogRoutes = require('../blog/blog.route');
+const routes = require('../indexRoute');
 
 dotenv.config();
 
@@ -28,9 +26,7 @@ app.use(session({
 
 app.use(express.json());
 
-app.use(userRoutes);
-app.use(authRoutes);
-app.use(blogRoutes);
+app.use('/', routes);
 
 app.use(errorHandler);
 
