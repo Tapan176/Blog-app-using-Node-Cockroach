@@ -106,23 +106,40 @@ module.exports = {
     applyFiltersOnBlogs: async (categoryId, publishedAfter, totalLikes, totalDislikes) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
+            let queryResult;
             if(categoryId){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`);
             } else if(publishedAfter){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}'`);
             } else if(totalLikes){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "likes" >= '${totalLikes}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "likes" >= '${totalLikes}'`);
             } else if(totalDislikes){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "dislikes" >= '${totalDislikes}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "dislikes" >= '${totalDislikes}'`);
             } else if(categoryId && publishedAfter){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}'`);
             } else if(categoryId && totalLikes){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}'`);
             } else if(categoryId && totalDislikes){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "dislikes" >= '${totalDislikes}'`);
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "dislikes" >= '${totalDislikes}'`);
             } else if(publishedAfter && totalLikes){
-                const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`);
-            } 
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`);
+            } else if(publishedAfter && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`);
+            } else if(totalLikes && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
+            } else if(categoryId && publishedAfter && totalLikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`);
+            } else if(categoryId && publishedAfter && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`);
+            } else if(categoryId && totalLikes && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
+            } else if(publishedAfter && totalLikes && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
+            } else if(categoryId && publishedAfter && totalLikes && totalDislikes){
+                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
+            }
+
+            return queryResult.rows;
         } finally {
             dbClient.release();
         }

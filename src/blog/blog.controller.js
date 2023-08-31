@@ -65,7 +65,7 @@ module.exports = {
             const totalLikes = request.query.totalLikes;
             const totalDislikes = request.query.totalDislikes;
 
-            const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, totalLikes, totalDislikes);
+            const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
