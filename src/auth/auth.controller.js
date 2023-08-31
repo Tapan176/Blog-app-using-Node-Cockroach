@@ -5,7 +5,11 @@ module.exports = {
         try {
             const { email, password } = request.body;
             const responseBody = await services.login(email, password);
-            response.status(200).json(responseBody);
+            request.session.user = { id: responseBody.id, 
+                email: responseBody.email,
+                firstName: responseBody.firstName,
+                lastName: responseBody.lastName };
+            response.status(204).json();
         } catch (error) {
             next(error);
         }
@@ -14,7 +18,24 @@ module.exports = {
         try {
             const { firstName, lastName, email, password, confirmPassword } = request.body;
             const responseBody = await services.signUp(firstName, lastName, email, password, confirmPassword);
-            response.status(200).json(responseBody);
+            response.status(201).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    logout: async (request, response, next) => {
+        try {
+            if (request.session.user) {
+                request.session.destroy((error) => {
+                    if (error) {
+                        throw new Error('logout_failed');
+                    } else {
+                        response.status(204).json();
+                    }
+                });
+            } else {
+                throw new Error('user_has_not_login');
+            }
         } catch (error) {
             next(error);
         }

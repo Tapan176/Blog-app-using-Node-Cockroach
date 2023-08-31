@@ -5,17 +5,17 @@ module.exports = {
     login: async (email, password) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT "email", "passwordHash" FROM users WHERE "email" = '${email}'`);
+            const queryResult = await dbClient.query(`SELECT * FROM users WHERE "email" = '${email}'`);
             if (queryResult.rowCount > 0) {
                 const passwordMatch = await bcrypt.compare(password, queryResult.rows[0].passwordHash);
                 if (passwordMatch) {
-                    return {message: "login successful", code: "login_successful"};
+                    return queryResult.rows[0];
                 } else {
-                    return {message: "incorrect password", code: "incorrect_password"};
+                    throw new Error('incorrect_password');
                 }
             }
             else {
-                return {message: "no user found", code:"no_user_found"};
+                throw new Error('user_not_found');
             }
         } finally {
             dbClient.release();
@@ -24,13 +24,20 @@ module.exports = {
     signUp: async (firstName, lastName, email, password, confirmPassword) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            if (password === confirmPassword) {
+            const existingUser = await dbClient.query(`SELECT * FROM users WHERE email = '${email}'`);
+            if (existingUser.rowCount > 0) {
+                throw new Error('user_already_exists');
+            }
+            if (password !== confirmPassword) {
+                throw new Error('password_and_confirm_password_do_not_match');
+            } else {
                 const hashedPassword = await bcrypt.hash(password, 10);
-                const queryResult = await dbClient.query(`INSERT INTO users ("firstName", "lastName", "email", "password") VALUES ('${firstName}', '${lastName}', '${email}', '${passwordHash}')`);
-                return hashedPassword;
+                const queryResult = await dbClient.query(`INSERT INTO users ("firstName", "lastName", "email", "passwordHash") 
+                                                                      VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`);
+                return queryResult;
             }
         } finally {
             dbClient.release();
         }
-    }
+    },
 };
