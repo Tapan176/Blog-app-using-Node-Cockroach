@@ -9,7 +9,7 @@ module.exports = {
                 email: responseBody.email,
                 firstName: responseBody.firstName,
                 lastName: responseBody.lastName };
-            response.status(204).json();
+            response.status(204).json(responseBody);
         } catch (error) {
             next(error);
         }
@@ -38,6 +38,29 @@ module.exports = {
             }
         } catch (error) {
             next(error);
+        }
+    },
+    forgotPassword: async (request, response, next) => {
+        try {
+          const { email } = request.body;
+      
+          const responseBody = await services.forgotPassword(email);
+      
+          response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    resetPassword: async (request, response, next) => {
+        try {
+          const { token } = request.query;
+          const { newPassword, confirmPassword } = request.body;
+
+          const responseBody = await services.resetPassword(token, newPassword, confirmPassword);
+
+          response.status(200).json(responseBody);
+        } catch (error) {
+          next(error);
         }
     },
 };

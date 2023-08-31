@@ -1,9 +1,4 @@
 module.exports = {
-  your_session_is_expired_please_login_again: {
-    code: 'your_session_is_expired_please_login_again',
-    message: 'Your seesion is expired please login again',
-    statusCode: 400,
-  },
   password_and_confirm_password_do_not_match: {
     code: 'password_and_confirm_password_do_not_match',
     message: 'Password and confirm password do not match',

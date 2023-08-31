@@ -7,6 +7,7 @@ const { errorHandler } = require('../middleware/error');
 
 const userRoutes = require('../user/user.route');
 const authRoutes = require('../auth/auth.route');
+const blogRoutes = require('../blog/blog.route');
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.use(express.json());
 
 app.use(userRoutes);
 app.use(authRoutes);
+app.use(blogRoutes);
+
 app.use(errorHandler);
 
 app.listen(PORT, () => {
