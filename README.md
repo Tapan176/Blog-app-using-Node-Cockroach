@@ -1,1 +1,1 @@
-﻿# Blog-app-using-Node-Express-CockroachDB
+﻿# Blog-app-using-node-express-and-cockroachDB
