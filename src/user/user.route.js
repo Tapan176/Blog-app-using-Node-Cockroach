@@ -6,9 +6,11 @@ const { getAllUserDetails,
         getUserDetailsByEmail, 
         createUser, 
         editUser, 
-        deleteUser } = require('./user.controller');
+        deleteUser,
+        changePassword,
+        changeName } = require('./user.controller');
 
-const { authenticateAdmin } = require('../middleware/passport');
+const { authenticateUser, authenticateAdmin } = require('../middleware/passport');
 
 router.route('/users')
         .get(authenticateAdmin, getAllUserDetails)
@@ -18,5 +20,7 @@ router.route('/users/:id')
         .get(authenticateAdmin, getUserDetailsById)
         .put(authenticateAdmin, editUser)
         .delete(authenticateAdmin, deleteUser);
+router.put('/users/:id/changePassword', authenticateUser, changePassword);
+router.put('/users/:id/changeName', authenticateUser, changeName);
 
 module.exports = router;

@@ -55,4 +55,24 @@ module.exports = {
             next(error);
         }
     },
+    changePassword: async (request, response, next) => {
+        try {
+            const { id: userId } = request.user;
+            const { oldPassword, newPassword, confirmNewPassword } = request.body;
+            const responseBody = await services.changePassword(userId, oldPassword, newPassword, confirmNewPassword);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    changeName: async (request, response, next) => {
+        try {
+            const { id: userId } = request.user;
+            const { firstName, lastName } = request.body;
+            const responseBody = await services.changeName(userId, firstName, lastName);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
 };

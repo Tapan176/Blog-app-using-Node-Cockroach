@@ -1,4 +1,5 @@
 const cockroachLib = require('../../cockroach');
+const bcrypt = require('bcrypt');
 
 module.exports = {
     getAllUserDetails: async () => {
@@ -65,6 +66,47 @@ module.exports = {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
             const queryResult = await dbClient.query(`DELETE FROM users WHERE "id" = '${userId}'`);                                                             
+            return queryResult.rows;
+        } finally {
+            dbClient.release();
+        }
+    },
+    changePassword: async (userId, oldPassword, newPassword, confirmNewPassword) => {
+        const dbClient = await cockroachLib.dbPool.connect();
+        try {
+            const findUser = await dbClient.query(`SELECT * FROM users WHERE "id" = '${userId}'`);
+
+            const passwordMatch = await bcrypt.compare(oldPassword, findUser.rows[0].passwordHash);
+
+            if (!passwordMatch) {
+                throw new Error('incorrect_password');
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                throw new Error('password_and_confirm_password_do_not_match');
+            }
+
+            if (oldPassword === newPassword) {
+                throw new Error('new_password_same_as_old_password');
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            const updatedAt = new Date().toISOString();
+
+            const queryResult = await dbClient.query(`UPDATE users SET "passwordHash" = '${hashedPassword}', "updatedAt" = '${updatedAt}' WHERE "id" = '${userId}'`);
+
+            return queryResult.rows;
+        } finally {
+            dbClient.release();
+        }
+    },
+    changeName: async (userId, firstName, lastName) => {
+        const dbClient = await cockroachLib.dbPool.connect();
+        try {
+            const updatedAt = new Date().toISOString();
+
+            const queryResult = await dbClient.query(`UPDATE users SET "firstName" = '${firstName}', "lastName" = '${lastName}', "updatedAt" = '${updatedAt}' WHERE "id" = '${userId}'`);
+            
             return queryResult.rows;
         } finally {
             dbClient.release();

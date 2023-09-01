@@ -18,8 +18,8 @@ CREATE TABLE users (
   "lastName" string(50) not null,
   "email" string(100) not null,
   "passwordHash" string(100) not null,
-  "createdAt" timestamp not null default CURRENT_TIMESTAMP,
-  "updatedAt" timestamp not null default CURRENT_TIMESTAMP,
+  "createdAt" timestamp not null CURRENT_TIMESTAMP,
+  "updatedAt" timestamp not null CURRENT_TIMESTAMP,
   "role" string not null default 'user',
   "isVerified" boolean not null default false,
   CHECK ("role" in ('admin', 'author', 'user'))
