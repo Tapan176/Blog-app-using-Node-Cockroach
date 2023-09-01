@@ -84,7 +84,7 @@ module.exports = {
                                                                           "body" = '${body}', 
                                                                           "userId" = '${userId}', 
                                                                           "categoryId" = '${categoryId}' 
-                                                                           WHERE "id" = '${blogId}'`);
+                                                                           WHERE "id" = '${blogId}' AND "userId" = '${userId}'`);
             
             return queryResult.rows[0];
         } finally {

@@ -8,7 +8,7 @@ const userRoutes = require('./user/user.route');
 
 router.use('/auth', authRoutes);
 router.use('/blog', blogRoutes);
-router.use('/comments', commentRoutes);
+router.use('/comment', commentRoutes);
 router.use('/user', userRoutes);
 
 module.exports = router;
