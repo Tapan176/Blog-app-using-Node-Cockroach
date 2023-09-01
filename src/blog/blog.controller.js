@@ -76,14 +76,4 @@ module.exports = {
             next(error);
         }
     },
-    applyFiltersOnBlogs: async (request, response, next) => {
-        try {
-            const { categoryId: categoryId, publishedAfter: publishedAfter, totalLikes: totalLikes, totalDislikes: totalDislikes } = request.query;
-            console.log(categoryId, new Date(publishedAfter), totalLikes, totalDislikes);
-            // const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
-            // response.status(200).json(responseBody);
-        } catch (error) {
-            next(error);
-        }
-    },
 };
