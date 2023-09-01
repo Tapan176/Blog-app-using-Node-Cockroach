@@ -19,6 +19,24 @@ module.exports = {
             dbClient.release();
         }
     },
+    getArticlesByCategory: async (categoryId) => {
+        const dbClient = await cockroachLib.dbPool.connect();
+        try {
+            const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`);
+            return queryResult.rows;
+        } finally {
+            dbClient.release();
+        }
+    },
+    getUserArticles: async (userId) => {
+        const dbClient = await cockroachLib.dbPool.connect();
+        try {
+            const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "userId" = '${userId}'`);
+            return queryResult.rows;
+        } finally {
+            dbClient.release();
+        }
+    },
     addArticle: async (title, body, category, userId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
@@ -103,45 +121,61 @@ module.exports = {
             dbClient.release();
         }
     },
-    applyFiltersOnBlogs: async (categoryId, publishedAfter, totalLikes, totalDislikes) => {
-        const dbClient = await cockroachLib.dbPool.connect();
-        try {
-            let queryResult;
-            if(categoryId){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`);
-            } else if(publishedAfter){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}'`);
-            } else if(totalLikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "likes" >= '${totalLikes}'`);
-            } else if(totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "dislikes" >= '${totalDislikes}'`);
-            } else if(categoryId && publishedAfter){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}'`);
-            } else if(categoryId && totalLikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}'`);
-            } else if(categoryId && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(publishedAfter && totalLikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`);
-            } else if(publishedAfter && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(totalLikes && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(categoryId && publishedAfter && totalLikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`);
-            } else if(categoryId && publishedAfter && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(categoryId && totalLikes && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(publishedAfter && totalLikes && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
-            } else if(categoryId && publishedAfter && totalLikes && totalDislikes){
-                queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`);
-            }
+    // applyFiltersOnBlogs: async (categoryId, publishedAfter, totalLikes, totalDislikes) => {
+    //     const dbClient = await cockroachLib.dbPool.connect();
+    //     try {
+    //         let query;
+    //         if(categoryId){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`
+    //         }
+    //         if(publishedAfter){
+    //             query = `SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}'`
+    //         }
+    //         if(totalLikes){
+    //             query = `SELECT * FROM articles WHERE "likes" >= '${totalLikes}'`
+    //         }
+    //         if(totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(categoryId && publishedAfter){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}'`
+    //         }
+    //         if(categoryId && totalLikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}'`
+    //         }
+    //         if(categoryId && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(publishedAfter && totalLikes){
+    //             query = `SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`
+    //         }
+    //         if(publishedAfter && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(totalLikes && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(categoryId && publishedAfter && totalLikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}'`
+    //         }
+    //         if(categoryId && publishedAfter && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(categoryId && totalLikes && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(publishedAfter && totalLikes && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
+    //         if(categoryId && publishedAfter && totalLikes && totalDislikes){
+    //             query = `SELECT * FROM articles WHERE "categoryId" = '${categoryId}' AND "createdAt" <= '${publishedAfter}' AND "likes" >= '${totalLikes}' AND "dislikes" >= '${totalDislikes}'`
+    //         }
 
-            return queryResult.rows;
-        } finally {
-            dbClient.release();
-        }
-    },
+    //         const queryResult = await dbClient.query(query);
+
+    //         return queryResult.rows;
+    //     } finally {
+    //         dbClient.release();
+    //     }
+    // },
 };

@@ -18,6 +18,24 @@ module.exports = {
             next(error);
         }
     },
+    getArticlesByCategory: async (request, response, next) => {
+        try {
+            const categoryId = request.params.categoryId;
+            const responseBody = await services.getArticlesByCategory(categoryId);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
+    getUserArticles: async (request, response, next) => {
+        try {
+            const userId = request.session.user.id;
+            const responseBody = await services.getUserArticles(userId);
+            response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
     addArticle: async (request, response, next) => {
         try {
             const userId = request.session.user.id;
@@ -58,17 +76,17 @@ module.exports = {
             next(error);
         }
     },
-    applyFiltersOnBlogs: async (request, response, next) => {
-        try {
-            const categoryId = request.query.categoryId;
-            const publishedAfter = request.query.publishedAfter;
-            const totalLikes = request.query.totalLikes;
-            const totalDislikes = request.query.totalDislikes;
-
-            const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
-            response.status(200).json(responseBody);
-        } catch (error) {
-            next(error);
-        }
-    },
+    // applyFiltersOnBlogs: async (request, response, next) => {
+    //     try {
+    //         const categoryId = request.query.categoryId;
+    //         const publishedAfter = new Date(request.query.publishedAfter);
+    //         const totalLikes = request.query.totalLikes;
+    //         const totalDislikes = request.query.totalDislikes;
+    //         console.log(categoryId, publishedAfter, totalLikes, totalDislikes);
+    //         // const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
+    //         // response.status(200).json(responseBody);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // },
 };
