@@ -14,7 +14,8 @@ module.exports = {
     }),
     signUpValidation: validate({
         body: Joi.object({
-          name: Joi.string().regex(/[a-zA-Z0-9]{3,30}/).required(),
+          firstName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
+          lastName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
           email: Joi.string()
             .email()
             .pattern(/^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|in)$/)
@@ -23,7 +24,6 @@ module.exports = {
             .regex(/[a-zA-Z0-9@]{3,30}/)
             .required(),
           confirmPassword: Joi.ref('password'),
-          address: Joi.string().required(),
         }),
     }),
     forgotPasswordValidation: validate({
