@@ -13,8 +13,44 @@ module.exports = {
     getArticlesById: async (blogId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "id" = '${blogId}'`);
-            return queryResult.rows;
+            const queryResult = await dbClient.query(`SELECT a.*, 
+                                                             t.title AS "category",
+                                                             u."firstName", 
+                                                             u."lastName", 
+                                                             u."email", 
+                                                             c.*
+                                                             FROM articles AS a
+                                                             JOIN users AS u ON a."userId" = u."id"
+                                                             LEFT JOIN comments AS c ON a."id" = c."articleId"
+                                                             LEFT JOIN categories AS t ON a."categoryId" = t."id"
+                                                             WHERE a."id" = '${blogId}'`);
+
+            const blogPage = {
+                                blogDetails: { 
+                                                title: queryResult.rows[0].title, 
+                                                body: queryResult.rows[0].body, 
+                                                category: queryResult.rows[0].category, 
+                                                createdAt: queryResult.rows[0].createdAt, 
+                                                updatedAt: queryResult.rows[0].updatedAt,
+                                                likes: queryResult.rows[0].likes,
+                                                dislikes: queryResult.rows[0].dislikes
+                                },
+                                authorDetails: {
+                                                fullName: queryResult.rows[0].firstName + " " + queryResult.rows[0].lastName,
+                                                email: queryResult.rows[0].email
+                                },
+                                blogComments: queryResult.rows.map(row => ({
+                                                                            userId: row.userId,
+                                                                            comment: row.comment,
+                                                                            likeS: row.likes,
+                                                                            dislikes: row.dislikes,
+                                                                            reply: row.reply,
+                                                                            commentedAt: row.createdAt,
+                                                                            editedAt: row.updatedAt
+                                }))
+            };
+
+            return blogPage;
         } finally {
             dbClient.release();
         }
@@ -37,72 +73,117 @@ module.exports = {
             dbClient.release();
         }
     },
-    addArticle: async (title, body, category, userId) => {
+    addArticle: async (title, body, category, userIdByAdmin, userId, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const existingBlog = await dbClient.query(`SELECT * FROM articles WHERE "title" = '${title}' AND "userId" = '${userId}'`);
+            if(userRole == "admin") {
+                const existingBlog = await dbClient.query(`SELECT * FROM articles WHERE "title" = '${title}' AND "userId" = '${userIdByAdmin}'`);
 
-            if (existingBlog.rowCount > 0) {
-                throw new Error('blog_already_exist');
-            }
+                if (existingBlog.rowCount > 0) {
+                    throw new Error('blog_already_exist');
+                }
 
-            const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
-            let categoryId;
-            if (findCategoryId.rowCount > 0) {
-                categoryId = findCategoryId.rows[0].id;
+                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                let categoryId;
+                if (findCategoryId.rowCount > 0) {
+                    categoryId = findCategoryId.rows[0].id;
+                } else {
+                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    categoryId = queryResult.rows[0].id;
+                }
+
+                const queryResult = await dbClient.query(`INSERT INTO articles ("title", "body", "userId", "categoryId") 
+                                                                      VALUES ('${title}', '${body}', '${userIdByAdmin}', '${categoryId}')`);
+                
+                return queryResult.rows;
             } else {
-                const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
-                categoryId = queryResult.rows[0].id;
-            }
+                const existingBlog = await dbClient.query(`SELECT * FROM articles WHERE "title" = '${title}' AND "userId" = '${userId}'`);
 
-            const queryResult = await dbClient.query(`INSERT INTO articles ("title", "body", "userId", "categoryId") VALUES ('${title}', '${body}', '${userId}', '${categoryId}')`);
-            
-            return queryResult.rows[0];
+                if (existingBlog.rowCount > 0) {
+                    throw new Error('blog_already_exist');
+                }
+
+                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                let categoryId;
+                if (findCategoryId.rowCount > 0) {
+                    categoryId = findCategoryId.rows[0].id;
+                } else {
+                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    categoryId = queryResult.rows[0].id;
+                }
+
+                const queryResult = await dbClient.query(`INSERT INTO articles ("title", "body", "userId", "categoryId") VALUES ('${title}', '${body}', '${userId}', '${categoryId}')`);
+                
+                return queryResult.rows;
+            }
         } finally {
             dbClient.release();
         }
     },
-    editArticle: async (blogId, title, body, category, userId) => {
+    editArticle: async (blogId, title, body, category, userId, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
-            
-            if (selectedBlogUserId.rows[0].userId != userId) {
-                throw new Error('blog_not_authorized');
-            }
+            if(userRole == 'admin') {
+                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                let categoryId;
+                if (findCategoryId.rowCount > 0) {
+                    categoryId = findCategoryId.rows[0].id;
+                } else {
+                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    categoryId = queryResult.rows[0].id;
+                }
 
-            const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
-            let categoryId;
-            if (findCategoryId.rowCount > 0) {
-                categoryId = findCategoryId.rows[0].id;
-            } else {
-                const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
-                categoryId = queryResult.rows[0].id;
-            }
-
-            const queryResult = await dbClient.query(`UPDATE articles SET "title" = '${title}', 
-                                                                          "body" = '${body}', 
-                                                                          "userId" = '${userId}', 
-                                                                          "categoryId" = '${categoryId}' 
-                                                                           WHERE "id" = '${blogId}' AND "userId" = '${userId}'`);
+                const queryResult = await dbClient.query(`UPDATE articles SET "title" = '${title}', 
+                                                                            "body" = '${body}',
+                                                                            "categoryId" = '${categoryId}' 
+                                                                            WHERE "id" = '${blogId}'`);
+                
+                return queryResult.rows[0];
+            } else{
+                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
             
-            return queryResult.rows[0];
+                if (selectedBlogUserId.rows[0].userId != userId) {
+                    throw new Error('blog_not_authorized');
+                }
+
+                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                let categoryId;
+                if (findCategoryId.rowCount > 0) {
+                    categoryId = findCategoryId.rows[0].id;
+                } else {
+                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    categoryId = queryResult.rows[0].id;
+                }
+
+                const queryResult = await dbClient.query(`UPDATE articles SET "title" = '${title}', 
+                                                                            "body" = '${body}',
+                                                                            "categoryId" = '${categoryId}' 
+                                                                            WHERE "id" = '${blogId}'`);
+                
+                return queryResult.rows[0];
+            }
         } finally {
             dbClient.release();
         }
     },
-    deleteArticle: async (blogId, userId) => {
+    deleteArticle: async (blogId, userId, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
+            if(userRole == 'admin') {
+                const queryResult = await dbClient.query(`DELETE FROM articles WHERE "id" = '${blogId}'`);
 
-            if (selectedBlogUserId.rows[0].userId != userId) {
-                throw new Error('blog_not_authorized');
+                return queryResult.rows[0];
+            } else {
+                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
+
+                if (selectedBlogUserId.rows[0].userId != userId) {
+                    throw new Error('blog_not_authorized');
+                }
+
+                const queryResult = await dbClient.query(`DELETE FROM articles WHERE "id" = '${blogId}'`);
+
+                return queryResult.rows[0];
             }
-
-            const queryResult = await dbClient.query(`DELETE FROM articles WHERE "id" = '${blogId}' AND "userId" = '${userId}'`)
-
-            return queryResult.rows[0];
         } finally {
             dbClient.release();
         }

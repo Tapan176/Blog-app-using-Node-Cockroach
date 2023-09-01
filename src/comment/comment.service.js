@@ -10,39 +10,54 @@ module.exports = {
             dbClient.release();
         }
     },
-    addComment: async(blogId, userId, comment) => {
+    addComment: async(blogId, userIdByAdmin, userId, comment, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`INSERT INTO comments ("articleId", "userId", "comment") VALUES ('${blogId}', '${userId}', '${comment}')`);
-            return queryResult.rows;
+            if(userRole == 'admin') {
+                const queryResult = await dbClient.query(`INSERT INTO comments ("articleId", "userId", "comment") VALUES ('${blogId}', '${userIdByAdmin}', '${comment}')`);
+                return queryResult.rows;
+            } else {
+                const queryResult = await dbClient.query(`INSERT INTO comments ("articleId", "userId", "comment") VALUES ('${blogId}', '${userId}', '${comment}')`);
+                return queryResult.rows;
+            }
         } finally {
             dbClient.release();
         }
     },
-    editComment: async(commentId, userId, comment) => {
+    editComment: async(commentId, userId, comment, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM comments WHERE "id" = '${commentId}'`);
+            if(userRole == 'admin') {
+                const queryResult = await dbClient.query(`UPDATE comments SET "comment" = '${comment}' WHERE "id" = '${commentId}'`);
+                return queryResult.rows;
+            } else {
+                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM comments WHERE "id" = '${commentId}'`);
             
-            if (selectedBlogUserId.rows[0].userId != userId) {
-                throw new Error('comment_not_authorized');
+                if (selectedBlogUserId.rows[0].userId != userId) {
+                    throw new Error('comment_not_authorized');
+                }
+                const queryResult = await dbClient.query(`UPDATE comments SET "comment" = '${comment}' WHERE "id" = '${commentId}'`);
+                return queryResult.rows;
             }
-            const queryResult = await dbClient.query(`UPDATE comments SET "comment" = '${comment}' WHERE "id" = '${commentId}' AND "userId" = '${userId}'`);
-            return queryResult.rows;
         } finally {
             dbClient.release();
         }
     },
-    deleteComment: async(commentId, userId) => {
+    deleteComment: async(commentId, userId, userRole) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM comments WHERE "id" = '${commentId}'`);
+            if(userRole == 'admin') {
+                const queryResult = await dbClient.query(`DELETE FROM comments WHERE "id" = '${commentId}'`);
+                return queryResult.rows;
+            } else {
+                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM comments WHERE "id" = '${commentId}'`);
             
-            if (selectedBlogUserId.rows[0].userId != userId) {
-                throw new Error('comment_not_authorized');
+                if (selectedBlogUserId.rows[0].userId != userId) {
+                    throw new Error('comment_not_authorized');
+                }
+                const queryResult = await dbClient.query(`DELETE FROM comments WHERE "id" = '${commentId}'`);
+                return queryResult.rows;
             }
-            const queryResult = await dbClient.query(`DELETE FROM comments WHERE "id" = '${commentId}' AND "userId" = '${userId}'`);
-            return queryResult.rows;
         } finally {
             dbClient.release();
         }

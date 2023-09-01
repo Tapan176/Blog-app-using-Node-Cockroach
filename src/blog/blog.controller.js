@@ -11,7 +11,7 @@ module.exports = {
     },
     getArticlesById: async (request, response, next) => {
         try {
-            const blogId = request.params.id;
+            const { blogId } = request.params;
             const responseBody = await services.getArticlesById(blogId);
             response.status(200).json(responseBody);
         } catch (error) {
@@ -38,9 +38,9 @@ module.exports = {
     },
     addArticle: async (request, response, next) => {
         try {
-            const userId = request.session.user.id;
-            const { title, body, category } = request.body;
-            const responseBody = await services.addArticle(title, body, category, userId);
+            const { id: userId, role: userRole } = request.user;
+            const { title, body, category, userIdByAdmin } = request.body;
+            const responseBody = await services.addArticle(title, body, category, userIdByAdmin, userId, userRole);
             response.status(201).json(responseBody);
         } catch (error) {
             next(error);
@@ -48,10 +48,10 @@ module.exports = {
     },
     editArticle: async (request, response, next) => {
         try {
-            const userId = request.session.user.id;
-            const blogId = request.params.id;
+            const { id: userId, role: userRole } = request.user;
+            const { blogId } = request.params;
             const { title, body, category } = request.body;
-            const responseBody = await services.editArticle(blogId, title, body, category, userId);
+            const responseBody = await services.editArticle(blogId, title, body, category, userId, userRole);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
@@ -59,9 +59,9 @@ module.exports = {
     },
     deleteArticle: async (request, response, next) => {
         try {
-            const userId = request.session.user.id;
-            const blogId = request.params.id;
-            const responseBody = await services.deleteArticle(blogId, userId);
+            const { id: userId, role: userRole } = request.user;
+            const { blogId } = request.params;
+            const responseBody = await services.deleteArticle(blogId, userId, userRole);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
@@ -69,24 +69,21 @@ module.exports = {
     },
     searchArticle: async (request, response, next) => {
         try {
-            const searchString = request.query.searchString;
+            const { searchString } = request.query;
             const responseBody = await services.searchArticle(searchString);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
         }
     },
-    // applyFiltersOnBlogs: async (request, response, next) => {
-    //     try {
-    //         const categoryId = request.query.categoryId;
-    //         const publishedAfter = new Date(request.query.publishedAfter);
-    //         const totalLikes = request.query.totalLikes;
-    //         const totalDislikes = request.query.totalDislikes;
-    //         console.log(categoryId, publishedAfter, totalLikes, totalDislikes);
-    //         // const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
-    //         // response.status(200).json(responseBody);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // },
+    applyFiltersOnBlogs: async (request, response, next) => {
+        try {
+            const { categoryId: categoryId, publishedAfter: publishedAfter, totalLikes: totalLikes, totalDislikes: totalDislikes } = request.query;
+            console.log(categoryId, new Date(publishedAfter), totalLikes, totalDislikes);
+            // const responseBody = await services.applyFiltersOnBlogs(categoryId, publishedAfter, parseInt(totalLikes), parseInt(totalDislikes));
+            // response.status(200).json(responseBody);
+        } catch (error) {
+            next(error);
+        }
+    },
 };

@@ -8,7 +8,8 @@ module.exports = {
             request.session.user = { id: responseBody.id, 
                 email: responseBody.email,
                 firstName: responseBody.firstName,
-                lastName: responseBody.lastName };
+                lastName: responseBody.lastName,
+                role: responseBody.role };
             response.status(204).json(responseBody);
         } catch (error) {
             next(error);

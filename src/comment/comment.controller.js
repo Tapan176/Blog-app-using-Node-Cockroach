@@ -3,7 +3,7 @@ const services = require('./comment.service');
 module.exports = {
     getAllComments: async(request, response, next) => {
         try {
-            const blogId = request.params.blogId;
+            const { blogId } = request.params;
             const responseBody = await services.getAllComments(blogId);
             response.status(200).json(responseBody);
         } catch (error) {
@@ -12,10 +12,10 @@ module.exports = {
     },
     addComment: async(request, response, next) => {
         try {
-            const blogId = request.params.blogId;
-            const userId = request.session.user.id;
-            const { comment } = request.body;
-            const responseBody = await services.addComment(blogId, userId, comment);
+            const { blogId } = request.params;
+            const { id: userId, role: userRole } = request.user;
+            const { comment, userIdByAdmin } = request.body;
+            const responseBody = await services.addComment(blogId, userIdByAdmin, userId, comment, userRole);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
@@ -23,10 +23,10 @@ module.exports = {
     },
     editComment: async(request, response, next) => {
         try {
-            const commentId = request.params.commentId;
-            const userId = request.session.user.id;
+            const { commentId } = request.params;
+            const { id: userId, role: userRole } = request.user;
             const { comment } = request.body;
-            const responseBody = await services.editComment(commentId, userId, comment);
+            const responseBody = await services.editComment(commentId, userId, comment, userRole);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);
@@ -34,9 +34,9 @@ module.exports = {
     },
     deleteComment: async(request, response, next) => {
         try {
-            const commentId = request.params.commentId;
-            const userId = request.session.user.id;
-            const responseBody = await services.deleteComment(commentId, userId);
+            const { commentId } = request.params;
+            const { id: userId, role: userRole } = request.user;
+            const responseBody = await services.deleteComment(commentId, userId, userRole);
             response.status(200).json(responseBody);
         } catch (error) {
             next(error);

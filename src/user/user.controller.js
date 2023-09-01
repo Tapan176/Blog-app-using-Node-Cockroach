@@ -11,7 +11,7 @@ module.exports = {
     },
     getUserDetailsById: async (request, response, next) => {
         try {
-            const userId = request.params.id;
+            const { userId } = request.params;
             const responseBody = await services.getUserDetailsById(userId);
             response.status(200).json(responseBody);
         } catch (error) {
@@ -20,7 +20,7 @@ module.exports = {
     },
     getUserDetailsByEmail: async (request, response, next) => {
         try {
-            const userEmail = request.body.email;
+            const { userEmail } = request.body;
             const responseBody = await services.getUserDetailsByEmail(userEmail);
             response.status(200).json(responseBody);
         } catch (error) {
@@ -38,7 +38,7 @@ module.exports = {
     },
     editUser: async (request, response, next) => {
         try {
-            const userId = request.params.id;
+            const { userId } = request.params;
             const { firstName, lastName, email, isVerified, role } = request.body;
             const responseBody = await services.editUser(userId, firstName, lastName, email, isVerified, role);
             response.status(200).json(responseBody);
@@ -48,7 +48,7 @@ module.exports = {
     },
     deleteUser: async (request, response, next) => {
         try {
-            const userId = request.params.id;
+            const { userId } = request.params;
             const responseBody = await services.deleteUser(userId);
             response.status(200).json(responseBody);
         } catch (error) {
