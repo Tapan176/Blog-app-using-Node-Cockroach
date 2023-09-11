@@ -12,7 +12,7 @@ const {
     selectCategoriesByTitle,
     insertCategory,
     searchArticle
-} = require('./blog.sql');
+} = require('./blog.dal');
 
 module.exports = {
     getAllArticles: async () => {

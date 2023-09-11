@@ -11,6 +11,24 @@ const { getAllArticles,
         getUserArticles } = require('./blog.controller');
 const { authenticateUser } = require('../middleware/passport');
 
+
+  /**
+ * @swagger
+ * tags:
+ *   name: Blog
+ *   description: Blog endpoints
+ */
+
+  /**
+ * @swagger
+ * /blogs:
+ *   get:
+ *     tags: 
+ *       - Blog
+ *   post:
+ *     tags: 
+ *       - Blog
+ */
 router.route('/blogs')
         .get(getAllArticles)
         .post(authenticateUser, addArticle);

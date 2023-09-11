@@ -7,7 +7,7 @@ const {
     selectUserByEmail,
     insertUser,
     updatePassword
-} = require('./auth.sql');
+} = require('./auth.dal');
 
 dotenv.config();
 

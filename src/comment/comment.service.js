@@ -5,7 +5,7 @@ const {
     updateComment,
     deleteCommentById,
     selectUserIdByCommentId
-} = require('./comment.sql');
+} = require('./comment.dal');
 
 module.exports = {
     getAllComments: async(blogId) => {

@@ -9,7 +9,7 @@ const {
     deleteUserById,
     updateUserPassword,
     updateUserFullName,
-} = require('./user.sql');
+} = require('./user.dal');
 
 module.exports = {
     getAllUserDetails: async () => {
