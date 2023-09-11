@@ -17,7 +17,7 @@ module.exports = {
     },
     signUp: async (request, response, next) => {
         try {
-            const { firstName, lastName, email, password, confirmPassword } = request.body;
+            const { firstName, lastName, email, password } = request.body;
             const responseBody = await services.signUp(firstName, lastName, email, password, confirmPassword);
             response.status(201).json(responseBody);
         } catch (error) {
@@ -57,7 +57,7 @@ module.exports = {
           const { token } = request.query;
           const { newPassword, confirmPassword } = request.body;
 
-          const responseBody = await services.resetPassword(token, newPassword, confirmPassword);
+          const responseBody = await services.resetPassword(token, newPassword);
 
           response.status(200).json(responseBody);
         } catch (error) {
