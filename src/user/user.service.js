@@ -1,11 +1,21 @@
 const cockroachLib = require('../../cockroach');
 const bcrypt = require('bcrypt');
+const {
+    selectAllUsers,
+    selectUserById,
+    selectUserByEmail,
+    insertUser,
+    updateUser,
+    deleteUserById,
+    updateUserPassword,
+    updateUserFullName,
+} = require('./user.sql');
 
 module.exports = {
     getAllUserDetails: async () => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query('SELECT * FROM users');
+            const queryResult = await dbClient.query(selectAllUsers);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -14,7 +24,7 @@ module.exports = {
     getUserDetailsById: async (userId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM users WHERE "id" = ${userId}`);
+            const queryResult = await dbClient.query(selectUserById, [userId]);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -23,7 +33,7 @@ module.exports = {
     getUserDetailsByEmail: async (userEmail) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM users WHERE "email" = '${userEmail}'`);
+            const queryResult = await dbClient.query(selectUserByEmail, [userEmail]);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -32,18 +42,15 @@ module.exports = {
     createUser: async (firstName, lastName, email, password, confirmPassword, isVerified, role) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const existingUser = await dbClient.query(`SELECT * FROM users WHERE email = '${email}'`);
+            const existingUser = await dbClient.query(selectUserByEmail, [email]);
+
             if (existingUser.rowCount > 0) {
                 throw new Error('user_already_exists');
             }
-            if (password !== confirmPassword) {
-                throw new Error('password_and_confirm_password_do_not_match');
-            } else {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                const queryResult = await dbClient.query(`INSERT INTO users ("firstName", "lastName", "email", "passwordHash", "isVerified", "role") 
-                                                                      VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}', '${isVerified}', '${role}')`);
-                return queryResult.rows;
-            }
+            
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const queryResult = await dbClient.query(insertUser, [firstName, lastName, email, hashedPassword, isVerified, role]);
+            return queryResult.rows;
         } finally {
             dbClient.release();
         }
@@ -51,12 +58,7 @@ module.exports = {
     editUser: async (userId, firstName, lastName, email, isVerified, role) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`UPDATE users SET "firstName" = '${firstName}', 
-                                                                        "lastName" = '${lastName}', 
-                                                                        "email" = '${email}',
-                                                                        "isVerified" = '${isVerified}', 
-                                                                        "role" = '${role}' WHERE "id" = '${userId}'`);
-                                                                        
+            const queryResult = await dbClient.query(updateUser, [firstName, lastName, email, isVerified, role, userId]);                                             
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -65,7 +67,7 @@ module.exports = {
     deleteUser: async (userId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`DELETE FROM users WHERE "id" = '${userId}'`);                                                             
+            const queryResult = await dbClient.query(deleteUserById, [userId]);                                                             
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -74,16 +76,12 @@ module.exports = {
     changePassword: async (userId, oldPassword, newPassword, confirmNewPassword) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const findUser = await dbClient.query(`SELECT * FROM users WHERE "id" = '${userId}'`);
+            const findUser = await dbClient.query(selectUserById, [userId]);
 
             const passwordMatch = await bcrypt.compare(oldPassword, findUser.rows[0].passwordHash);
 
             if (!passwordMatch) {
                 throw new Error('incorrect_password');
-            }
-
-            if (newPassword !== confirmNewPassword) {
-                throw new Error('password_and_confirm_password_do_not_match');
             }
 
             if (oldPassword === newPassword) {
@@ -93,7 +91,7 @@ module.exports = {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             const updatedAt = new Date().toISOString();
 
-            const queryResult = await dbClient.query(`UPDATE users SET "passwordHash" = '${hashedPassword}', "updatedAt" = '${updatedAt}' WHERE "id" = '${userId}'`);
+            const queryResult = await dbClient.query(updateUserPassword, [hashedPassword, updatedAt, userId]);
 
             return queryResult.rows;
         } finally {
@@ -105,7 +103,7 @@ module.exports = {
         try {
             const updatedAt = new Date().toISOString();
 
-            const queryResult = await dbClient.query(`UPDATE users SET "firstName" = '${firstName}', "lastName" = '${lastName}', "updatedAt" = '${updatedAt}' WHERE "id" = '${userId}'`);
+            const queryResult = await dbClient.query(updateUserFullName, [firstName, lastName, updatedAt, userId]);
             
             return queryResult.rows;
         } finally {
