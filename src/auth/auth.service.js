@@ -3,6 +3,11 @@ const bcrypt = require('bcrypt');
 const helper = require('../utils/helper');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const {
+    selectUserByEmail,
+    insertUser,
+    updatePassword
+} = require('./auth.query');
 
 dotenv.config();
 
@@ -10,7 +15,7 @@ module.exports = {
     login: async (email, password) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM users WHERE "email" = '${email}'`);
+            const queryResult = await dbClient.query(selectUserByEmail, [email]);
 
             const passwordMatch = await bcrypt.compare(password, queryResult.rows[0].passwordHash);
 
@@ -26,7 +31,7 @@ module.exports = {
     signUp: async (firstName, lastName, email, password) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const existingUser = await dbClient.query(`SELECT * FROM users WHERE email = '${email}'`);
+            const existingUser = await dbClient.query(selectUserByEmail, [email]);
 
             if (existingUser.rowCount > 0) {
                 throw new Error('user_already_exists');
@@ -34,8 +39,8 @@ module.exports = {
            
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const queryResult = await dbClient.query(`INSERT INTO users ("firstName", "lastName", "email", "passwordHash") 
-                                                                    VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`);
+            const queryResult = await dbClient.query(insertUser, [firstName, lastName, email, hashedPassword]);
+
             return queryResult;
             
         } finally {
@@ -45,7 +50,7 @@ module.exports = {
     forgotPassword: async (email) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-          const existingUser = await dbClient.query(`SELECT * FROM users WHERE email = '${email}'`);
+          const existingUser = await dbClient.query(selectUserByEmail, [email]);
       
           const resetToken = helper.generateToken({ email });
 
@@ -63,7 +68,7 @@ module.exports = {
         try {
           const decoded = jwt.verify(token, process.env.JWT_SECRET);     
 
-          const existingUser = await dbClient.query(`SELECT * FROM users WHERE email = '${decoded.email}'`);     
+          const existingUser = await dbClient.query(selectUserByEmail, [decoded.email]);     
 
           const passwordMatch = await bcrypt.compare(newPassword, existingUser.rows[0].passwordHash);
       
@@ -73,7 +78,7 @@ module.exports = {
       
           const hashedPassword = await bcrypt.hash(newPassword, 10);
           
-          const queryResult = await dbClient.query(`UPDATE users SET "passwordHash" = '${hashedPassword}' WHERE "email" = '${decoded.email}'`);
+          const queryResult = await dbClient.query(updatePassword, [hashedPassword, decoded.email]);
       
           return queryResult.rows[0];
         } finally {

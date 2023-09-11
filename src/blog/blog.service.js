@@ -1,10 +1,24 @@
 const cockroachLib = require('../../cockroach');
+const {
+    selectAllArticles,
+    selectArticleById,
+    selectArticlesByCategoryId,
+    selectArticlesByUserId,
+    selectUserIdByBlogId,
+    insertArticle,
+    updateArticle,
+    deleteArticleById,
+    selectArticleByTitleAndUserId,
+    selectCategoriesByTitle,
+    insertCategory,
+    searchArticle
+} = require('./blog.query');
 
 module.exports = {
     getAllArticles: async () => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM articles`);
+            const queryResult = await dbClient.query(selectAllArticles);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -13,17 +27,7 @@ module.exports = {
     getArticlesById: async (blogId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT a.*, 
-                                                             t.title AS "category",
-                                                             u."firstName", 
-                                                             u."lastName", 
-                                                             u."email", 
-                                                             c.*
-                                                             FROM articles AS a
-                                                             JOIN users AS u ON a."userId" = u."id"
-                                                             LEFT JOIN comments AS c ON a."id" = c."articleId"
-                                                             LEFT JOIN categories AS t ON a."categoryId" = t."id"
-                                                             WHERE a."id" = '${blogId}'`);
+            const queryResult = await dbClient.query(selectArticleById, [blogId]);
 
             const blogPage = {
                                 blogDetails: { 
@@ -58,7 +62,7 @@ module.exports = {
     getArticlesByCategory: async (categoryId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "categoryId" = '${categoryId}'`);
+            const queryResult = await dbClient.query(selectArticlesByCategoryId, [categoryId]);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -67,7 +71,7 @@ module.exports = {
     getUserArticles: async (userId) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT * FROM articles WHERE "userId" = '${userId}'`);
+            const queryResult = await dbClient.query(selectArticlesByUserId, [userId]);
             return queryResult.rows;
         } finally {
             dbClient.release();
@@ -77,42 +81,41 @@ module.exports = {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
             if(userRole == "admin") {
-                const existingBlog = await dbClient.query(`SELECT * FROM articles WHERE "title" = '${title}' AND "userId" = '${userIdByAdmin}'`);
+                const existingBlog = await dbClient.query(selectArticleByTitleAndUserId, [title, userIdByAdmin]);
 
                 if (existingBlog.rowCount > 0) {
                     throw new Error('blog_already_exist');
                 }
 
-                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    const queryResult = await dbClient.query(insertCategory, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(`INSERT INTO articles ("title", "body", "userId", "categoryId") 
-                                                                      VALUES ('${title}', '${body}', '${userIdByAdmin}', '${categoryId}')`);
+                const queryResult = await dbClient.query(insertArticle, [title, body, userIdByAdmin, categoryId]);
                 
                 return queryResult.rows;
             } else {
-                const existingBlog = await dbClient.query(`SELECT * FROM articles WHERE "title" = '${title}' AND "userId" = '${userId}'`);
+                const existingBlog = await dbClient.query(selectArticleByTitleAndUserId, [title, userId]);
 
                 if (existingBlog.rowCount > 0) {
                     throw new Error('blog_already_exist');
                 }
 
-                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    const queryResult = await dbClient.query(insertCategory, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(`INSERT INTO articles ("title", "body", "userId", "categoryId") VALUES ('${title}', '${body}', '${userId}', '${categoryId}')`);
+                const queryResult = await dbClient.query(insertArticle,  [title, body, userId, categoryId]);
                 
                 return queryResult.rows;
             }
@@ -124,41 +127,35 @@ module.exports = {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
             if(userRole == 'admin') {
-                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    const queryResult = await dbClient.query(insertCategory, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(`UPDATE articles SET "title" = '${title}', 
-                                                                            "body" = '${body}',
-                                                                            "categoryId" = '${categoryId}' 
-                                                                            WHERE "id" = '${blogId}'`);
+                const queryResult = await dbClient.query(updateArticle, [title, body, categoryId, blogId]);
                 
                 return queryResult.rows[0];
             } else{
-                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
+                const selectedBlogUserId = await dbClient.query(selectUserIdByBlogId, [blogId]);
             
                 if (selectedBlogUserId.rows[0].userId != userId) {
                     throw new Error('blog_not_authorized');
                 }
 
-                const findCategoryId = await dbClient.query(`SELECT * FROM categories WHERE "title" = '${category}'`);
+                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(`INSERT INTO categories ("title") VALUES ('${category}')`);
+                    const queryResult = await dbClient.query(insertCategory, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(`UPDATE articles SET "title" = '${title}', 
-                                                                            "body" = '${body}',
-                                                                            "categoryId" = '${categoryId}' 
-                                                                            WHERE "id" = '${blogId}'`);
+                const queryResult = await dbClient.query(updateArticle, [title, body, categoryId, blogId]);
                 
                 return queryResult.rows[0];
             }
@@ -170,17 +167,17 @@ module.exports = {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
             if(userRole == 'admin') {
-                const queryResult = await dbClient.query(`DELETE FROM articles WHERE "id" = '${blogId}'`);
+                const queryResult = await dbClient.query(deleteArticleById, [blogId]);
 
                 return queryResult.rows[0];
             } else {
-                const selectedBlogUserId = await dbClient.query(`SELECT "userId" FROM articles WHERE "id" = '${blogId}'`);
+                const selectedBlogUserId = await dbClient.query(selectUserIdByBlogId, [blogId]);
 
                 if (selectedBlogUserId.rows[0].userId != userId) {
                     throw new Error('blog_not_authorized');
                 }
 
-                const queryResult = await dbClient.query(`DELETE FROM articles WHERE "id" = '${blogId}'`);
+                const queryResult = await dbClient.query(deleteArticleById, [blogId]);
 
                 return queryResult.rows[0];
             }
@@ -191,12 +188,7 @@ module.exports = {
     searchArticle: async (searchString) => {
         const dbClient = await cockroachLib.dbPool.connect();
         try {
-            const queryResult = await dbClient.query(`SELECT a.*
-                                                      FROM articles a
-                                                      LEFT JOIN users u ON a."userId" = u."id"
-                                                      WHERE a."title" LIKE '%${searchString}%'
-                                                      OR a."body" LIKE '%${searchString}%'
-                                                      OR (u."firstName" LIKE '%${searchString}%' OR u."lastName" LIKE '%${searchString}%');`);
+            const queryResult = await dbClient.query(searchArticle, [searchString]);
             return queryResult.rows;
         } finally {
             dbClient.release();
