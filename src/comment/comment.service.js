@@ -1,4 +1,4 @@
-const cockroachLib = require('../../cockroach');
+const cockroachLib = require('../cockroach');
 const {
     selectCommentsByArticleId,
     insertComment,
@@ -9,7 +9,7 @@ const {
 
 module.exports = {
     getAllComments: async(blogId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(selectCommentsByArticleId, [blogId]);
             return queryResult.rows;
@@ -18,7 +18,7 @@ module.exports = {
         }
     },
     addComment: async(blogId, userIdByAdmin, userId, comment, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == 'admin') {
                 const queryResult = await dbClient.query(insertComment, [blogId, userIdByAdmin, comment]);
@@ -32,7 +32,7 @@ module.exports = {
         }
     },
     editComment: async(commentId, userId, comment, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == 'admin') {
                 const queryResult = await dbClient.query(updateComment, [comment, commentId]);
@@ -51,7 +51,7 @@ module.exports = {
         }
     },
     deleteComment: async(commentId, userId, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == 'admin') {
                 const queryResult = await dbClient.query(deleteCommentById, [commentId]);

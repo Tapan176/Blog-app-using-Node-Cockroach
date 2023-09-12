@@ -1,43 +1,42 @@
-const { validate, Joi } = require('express-validation');
+const { Joi } = require('express-validation');
+
+const validationSchema = {
+  email: Joi.string()
+            .email()
+            .pattern(/^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|in)$/)
+            .required(),
+  password: Joi.string()
+               .regex(/[a-zA-Z0-9@]{3,30}/)
+               .required(),
+  firstName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
+  lastName: Joi.string().regex(/[a-zA-Z]{3,30}/).required() 
+};
 
 module.exports = {
-    loginValidation: validate({
+    login: {
         body: Joi.object({
-          email: Joi.string()
-            .email()
-            .pattern(/^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|in)$/)
-            .required(),
-          password: Joi.string()
-            .regex(/[a-zA-Z0-9@]{3,30}/)
-            .required(),
+          email: validationSchema.email,
+          password: validationSchema.password,
         }),
-    }),
-    signUpValidation: validate({
+    },
+    signUp: {
         body: Joi.object({
-          firstName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
-          lastName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
-          email: Joi.string()
-            .email()
-            .pattern(/^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|in)$/)
-            .required(),
-          password: Joi.string()
-            .regex(/[a-zA-Z0-9@]{3,30}/)
-            .required(),
-          confirmPassword: Joi.ref('password'),
+          firstName: validationSchema.firstName,
+          lastName: validationSchema.lastName,
+          email: validationSchema.email,
+          password: validationSchema.password,
+          confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
         }),
-    }),
-    forgotPasswordValidation: validate({
+    },
+    forgotPassword: {
         body: Joi.object({
-          email: Joi.string()
-            .email()
-            .pattern(/^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|in)$/)
-            .required(),
+          email: validationSchema.email,
         }),
-    }),
-    resetPasswordValidation: validate({
+    },
+    resetPassword: {
         body: Joi.object({
-          newPassword: Joi.string().regex(/[a-zA-Z0-9@]{3,30}/).required(),
+          newPassword: validationSchema.password,
           confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required(),
         }),
-    }),
+    },
 };

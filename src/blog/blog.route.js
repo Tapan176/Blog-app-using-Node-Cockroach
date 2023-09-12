@@ -1,45 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllArticles, 
-        getArticlesById, 
-        addArticle, 
-        editArticle, 
-        deleteArticle, 
-        searchArticle, 
-        getArticlesByCategory,
-        getUserArticles } = require('./blog.controller');
+const controller = require('./blog.controller');
 const { authenticateUser } = require('../middleware/passport');
 
-
-  /**
- * @swagger
- * tags:
- *   name: Blog
- *   description: Blog endpoints
- */
-
-  /**
- * @swagger
- * /blogs:
- *   get:
- *     tags: 
- *       - Blog
- *   post:
- *     tags: 
- *       - Blog
- */
 router.route('/blogs')
-        .get(getAllArticles)
-        .post(authenticateUser, addArticle);
+        .get(controller.getAllArticles)
+        .post(authenticateUser, controller.addArticle);
 
-router.get('/blogs/search', searchArticle);
-router.get('/blogs/myblogs', authenticateUser, getUserArticles);
+router.route('/blogs/search')
+        .get(controller.searchArticle);
+router.route('/blogs/myblogs')
+        .get(authenticateUser, controller.getUserArticles);
 
 router.route('/blogs/:blogId')
-        .get(getArticlesById)
-        .put(authenticateUser, editArticle)
-        .delete(authenticateUser, deleteArticle);
-router.get('/blogs/categories/:categoryId', getArticlesByCategory);
+        .get(controller.getArticlesById)
+        .put(authenticateUser, controller.editArticle)
+        .delete(authenticateUser, controller.deleteArticle);
+router.route('/blogs/categories/:categoryId')
+        .get(controller.getArticlesByCategory);
 
 module.exports = router;

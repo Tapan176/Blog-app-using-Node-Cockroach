@@ -15,10 +15,10 @@ module.exports = {
             next(error);
         }
     },
-    signUp: async (request, response, next) => {
+    signup: async (request, response, next) => {
         try {
             const { firstName, lastName, email, password } = request.body;
-            const responseBody = await services.signUp(firstName, lastName, email, password, confirmPassword);
+            const responseBody = await services.signup(firstName, lastName, email, password, confirmPassword);
             response.status(201).json(responseBody);
         } catch (error) {
             next(error);

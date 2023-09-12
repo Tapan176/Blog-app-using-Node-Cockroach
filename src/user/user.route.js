@@ -1,26 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllUserDetails, 
-        getUserDetailsById, 
-        getUserDetailsByEmail, 
-        createUser, 
-        editUser, 
-        deleteUser,
-        changePassword,
-        changeName } = require('./user.controller');
+const controller = require('./user.controller');
 
 const { authenticateUser, authenticateAdmin } = require('../middleware/passport');
 
 router.route('/users')
-        .get(authenticateAdmin, getAllUserDetails)
-        .post(authenticateAdmin, createUser);
-router.get('/users/email', authenticateAdmin, getUserDetailsByEmail);
+        .get(authenticateAdmin, controller.getAllUserDetails)
+        .post(authenticateAdmin, controller.createUser);
+router.route('/users/email')
+        .get(authenticateAdmin, controller.getUserDetailsByEmail);
 router.route('/users/:id')
-        .get(authenticateAdmin, getUserDetailsById)
-        .put(authenticateAdmin, editUser)
-        .delete(authenticateAdmin, deleteUser);
-router.put('/users/:id/changePassword', authenticateUser, changePassword);
-router.put('/users/:id/changeName', authenticateUser, changeName);
+        .get(authenticateAdmin, controller.getUserDetailsById)
+        .put(authenticateAdmin, controller.editUser)
+        .delete(authenticateAdmin, controller.deleteUser);
+router.route('/users/:id/change-password')
+        .put(authenticateUser, controller.changePassword);
+router.route('/users/:id/change-name')
+        .put(authenticateUser, controller.changeName);
 
 module.exports = router;

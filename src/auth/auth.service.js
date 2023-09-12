@@ -1,37 +1,30 @@
-const cockroachLib = require('../../cockroach');
+const cockroachLib = require('../cockroach');
 const bcrypt = require('bcrypt');
 const helper = require('../utils/helper');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const {
-    selectUserByEmail,
-    insertUser,
-    updatePassword
-} = require('./auth.dal');
-
-dotenv.config();
+const dal = require('./auth.dal');
 
 module.exports = {
     login: async (email, password) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(selectUserByEmail, [email]);
+            const queryResult = await dal.selectUserByEmail(dbClient, [email]);
 
             const passwordMatch = await bcrypt.compare(password, queryResult.rows[0].passwordHash);
 
-            if (passwordMatch) {
-                return queryResult.rows[0];
-            } else {
+            if (!passwordMatch) {
                 throw new Error('incorrect_password');
             }
+
+            return queryResult.rows[0];
         } finally {
             dbClient.release();
         }
     },
-    signUp: async (firstName, lastName, email, password) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+    signup: async (firstName, lastName, email, password) => {
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const existingUser = await dbClient.query(selectUserByEmail, [email]);
+            const existingUser = await dal.selectUserByEmail(dbClient, [email]);
 
             if (existingUser.rowCount > 0) {
                 throw new Error('user_already_exists');
@@ -39,7 +32,7 @@ module.exports = {
            
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const queryResult = await dbClient.query(insertUser, [firstName, lastName, email, hashedPassword]);
+            const queryResult = await dal.insertUser(dbClient, [firstName, lastName, email, hashedPassword]);
 
             return queryResult;
             
@@ -48,13 +41,13 @@ module.exports = {
         }
     },
     forgotPassword: async (email) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-          const existingUser = await dbClient.query(selectUserByEmail, [email]);
+          const existingUser = await dal.selectUserByEmail(dbClient, {email: email});
       
           const resetToken = helper.generateToken({ email });
 
-          const linkToSend = `http://localhost:${process.env.PORT}/resetPassword?token=${resetToken}`;
+          const linkToSend = `${process.env.RESET_PASSWORD_LINK}/resetPassword?token=${resetToken}`;
       
           await helper.sendEmail(email, linkToSend);
 
@@ -64,11 +57,11 @@ module.exports = {
         }
     },
     resetPassword: async (token, newPassword) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
           const decoded = jwt.verify(token, process.env.JWT_SECRET);     
 
-          const existingUser = await dbClient.query(selectUserByEmail, [decoded.email]);     
+          const existingUser = await dal.selectUserByEmail(dbClient, [email]);     
 
           const passwordMatch = await bcrypt.compare(newPassword, existingUser.rows[0].passwordHash);
       
@@ -78,7 +71,7 @@ module.exports = {
       
           const hashedPassword = await bcrypt.hash(newPassword, 10);
           
-          const queryResult = await dbClient.query(updatePassword, [hashedPassword, decoded.email]);
+          const queryResult = await dal.updatePassword(dbClient, [hashedPassword, decoded.email]);
       
           return queryResult.rows[0];
         } finally {

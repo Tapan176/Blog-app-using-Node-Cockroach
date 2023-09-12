@@ -1,33 +1,20 @@
-const cockroachLib = require('../../cockroach');
-const {
-    selectAllArticles,
-    selectArticleById,
-    selectArticlesByCategoryId,
-    selectArticlesByUserId,
-    selectUserIdByBlogId,
-    insertArticle,
-    updateArticle,
-    deleteArticleById,
-    selectArticleByTitleAndUserId,
-    selectCategoriesByTitle,
-    insertCategory,
-    searchArticle
-} = require('./blog.dal');
+const cockroachLib = require('../cockroach');
+const dal = require('./blog.dal');
 
 module.exports = {
     getAllArticles: async () => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(selectAllArticles);
+            const queryResult = await dal.selectAllArticles(dbClient);
             return queryResult.rows;
         } finally {
             dbClient.release();
         }
     },
     getArticlesById: async (blogId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(selectArticleById, [blogId]);
+            const queryResult = await dal.selectArticleById(dbClient, [blogId]);
 
             const blogPage = {
                                 blogDetails: { 
@@ -60,62 +47,62 @@ module.exports = {
         }
     },
     getArticlesByCategory: async (categoryId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(selectArticlesByCategoryId, [categoryId]);
+            const queryResult = await dal.selectArticlesByCategoryId(dbClient, [categoryId]);
             return queryResult.rows;
         } finally {
             dbClient.release();
         }
     },
     getUserArticles: async (userId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(selectArticlesByUserId, [userId]);
+            const queryResult = await dal.selectArticlesByUserId(dbClient, [userId]);
             return queryResult.rows;
         } finally {
             dbClient.release();
         }
     },
     addArticle: async (title, body, category, userIdByAdmin, userId, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == "admin") {
-                const existingBlog = await dbClient.query(selectArticleByTitleAndUserId, [title, userIdByAdmin]);
+                const existingBlog = await dal.selectArticleByTitleAndUserId(dbClient, [title, userIdByAdmin]);
 
                 if (existingBlog.rowCount > 0) {
                     throw new Error('blog_already_exist');
                 }
 
-                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
+                const findCategoryId = await dal.selectCategoriesByTitle(dbClient, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(insertCategory, [category]);
+                    const queryResult = await dal.insertCategory(dbClient, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(insertArticle, [title, body, userIdByAdmin, categoryId]);
+                const queryResult = await dal.insertArticle(dbClient, [title, body, userIdByAdmin, categoryId]);
                 
                 return queryResult.rows;
             } else {
-                const existingBlog = await dbClient.query(selectArticleByTitleAndUserId, [title, userId]);
+                const existingBlog = await dal.selectArticleByTitleAndUserId(dbClient, [title, userId]);
 
                 if (existingBlog.rowCount > 0) {
                     throw new Error('blog_already_exist');
                 }
 
-                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
+                const findCategoryId = await dal.selectCategoriesByTitle(dbClient, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(insertCategory, [category]);
+                    const queryResult = await dal.insertCategory(dbClient, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(insertArticle,  [title, body, userId, categoryId]);
+                const queryResult = await dal.insertArticle(dbClient,  [title, body, userId, categoryId]);
                 
                 return queryResult.rows;
             }
@@ -124,38 +111,38 @@ module.exports = {
         }
     },
     editArticle: async (blogId, title, body, category, userId, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == 'admin') {
-                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
+                const findCategoryId = await dal.selectCategoriesByTitle(dbClient, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(insertCategory, [category]);
+                    const queryResult = await dal.insertCategory(dbClient, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(updateArticle, [title, body, categoryId, blogId]);
+                const queryResult = await dal.updateArticle(dbClient, [title, body, categoryId, blogId]);
                 
                 return queryResult.rows[0];
             } else{
-                const selectedBlogUserId = await dbClient.query(selectUserIdByBlogId, [blogId]);
+                const selectedBlogUserId = await dal.selectUserIdByBlogId(dbClient, [blogId]);
             
                 if (selectedBlogUserId.rows[0].userId != userId) {
                     throw new Error('blog_not_authorized');
                 }
 
-                const findCategoryId = await dbClient.query(selectCategoriesByTitle, [category]);
+                const findCategoryId = await dal.selectCategoriesByTitle(dbClient, [category]);
                 let categoryId;
                 if (findCategoryId.rowCount > 0) {
                     categoryId = findCategoryId.rows[0].id;
                 } else {
-                    const queryResult = await dbClient.query(insertCategory, [category]);
+                    const queryResult = await dal.insertCategory(dbClient, [category]);
                     categoryId = queryResult.rows[0].id;
                 }
 
-                const queryResult = await dbClient.query(updateArticle, [title, body, categoryId, blogId]);
+                const queryResult = await dal.updateArticle(dbClient, [title, body, categoryId, blogId]);
                 
                 return queryResult.rows[0];
             }
@@ -164,20 +151,20 @@ module.exports = {
         }
     },
     deleteArticle: async (blogId, userId, userRole) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             if(userRole == 'admin') {
-                const queryResult = await dbClient.query(deleteArticleById, [blogId]);
+                const queryResult = await dal.deleteArticleById(dbClient, [blogId]);
 
                 return queryResult.rows[0];
             } else {
-                const selectedBlogUserId = await dbClient.query(selectUserIdByBlogId, [blogId]);
+                const selectedBlogUserId = await dal.selectUserIdByBlogId(dbClient, [blogId]);
 
                 if (selectedBlogUserId.rows[0].userId != userId) {
                     throw new Error('blog_not_authorized');
                 }
 
-                const queryResult = await dbClient.query(deleteArticleById, [blogId]);
+                const queryResult = await dal.deleteArticleById(dbClient, [blogId]);
 
                 return queryResult.rows[0];
             }
@@ -186,9 +173,9 @@ module.exports = {
         }
     },
     searchArticle: async (searchString) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dbClient.query(searchArticle, [searchString]);
+            const queryResult = await dal.searchArticle(dbClient, [searchString]);
             return queryResult.rows;
         } finally {
             dbClient.release();

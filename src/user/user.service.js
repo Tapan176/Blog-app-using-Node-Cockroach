@@ -1,4 +1,4 @@
-const cockroachLib = require('../../cockroach');
+const cockroachLib = require('../cockroach');
 const bcrypt = require('bcrypt');
 const {
     selectAllUsers,
@@ -13,7 +13,7 @@ const {
 
 module.exports = {
     getAllUserDetails: async () => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(selectAllUsers);
             return queryResult.rows;
@@ -22,7 +22,7 @@ module.exports = {
         }
     },
     getUserDetailsById: async (userId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(selectUserById, [userId]);
             return queryResult.rows;
@@ -31,7 +31,7 @@ module.exports = {
         }
     },
     getUserDetailsByEmail: async (userEmail) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(selectUserByEmail, [userEmail]);
             return queryResult.rows;
@@ -40,7 +40,7 @@ module.exports = {
         }
     },
     createUser: async (firstName, lastName, email, password, confirmPassword, isVerified, role) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const existingUser = await dbClient.query(selectUserByEmail, [email]);
 
@@ -56,7 +56,7 @@ module.exports = {
         }
     },
     editUser: async (userId, firstName, lastName, email, isVerified, role) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(updateUser, [firstName, lastName, email, isVerified, role, userId]);                                             
             return queryResult.rows;
@@ -65,7 +65,7 @@ module.exports = {
         }
     },
     deleteUser: async (userId) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const queryResult = await dbClient.query(deleteUserById, [userId]);                                                             
             return queryResult.rows;
@@ -74,7 +74,7 @@ module.exports = {
         }
     },
     changePassword: async (userId, oldPassword, newPassword, confirmNewPassword) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const findUser = await dbClient.query(selectUserById, [userId]);
 
@@ -99,7 +99,7 @@ module.exports = {
         }
     },
     changeName: async (userId, firstName, lastName) => {
-        const dbClient = await cockroachLib.dbPool.connect();
+        const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
             const updatedAt = new Date().toISOString();
 

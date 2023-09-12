@@ -1,33 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const { validate } = require('express-validation');
 
-const { login, signUp, logout, forgotPassword, resetPassword } = require('./auth.controller');
+const controller = require('./auth.controller');
 const { verifyJwtToken } = require('../middleware/passport');
-const {
-    loginValidation,
-    signUpValidation,
-    forgotPasswordValidation,
-    resetPasswordValidation,
-  } = require('./auth.validation');
+const validation = require('./auth.validation');
 
-  /**
- * @swagger
- * tags:
- *   name: Authentication
- *   description: User authentication endpoints
- */
+/**
+* @swagger
+* tags:
+*   name: Authentication
+*   description: User authentication endpoints
+*/
 
-  /**
- * @swagger
- * /login:
- *   post:
- *     tags:
- *       - Authentication
- *     summary: User login
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
+/**
+* @swagger
+* /login:
+*   post:
+*     tags:
+*       - Authentication
+*     summary: User login
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
  *           schema:
  *             $ref: '#/components/schemas/UserLogin'
  *     responses:
@@ -38,7 +34,8 @@ const {
  *       '500':
  *         $ref: '#/components/responses/authenticationFailed'
  */
-router.post('/login', loginValidation, login);
+router.route('/login')
+        .post(validate(validation.login), controller.login);
 
 /**
  * @swagger
@@ -63,7 +60,8 @@ router.post('/login', loginValidation, login);
  *       '500':
  *         $ref: '#/components/responses/failedToRegisterUser'
  */
-router.post('/signUp', signUpValidation, signUp);
+router.route('/signup')
+        .post(validate(validation.signUp), controller.signup);
 
 /**
  * @swagger
@@ -80,7 +78,8 @@ router.post('/signUp', signUpValidation, signUp);
  *       '500':
  *         $ref: '#/components/responses/logoutFailed'
  */
-router.post('/logout', logout);
+router.route('/logout')
+        .post(controller.logout);
 
 /**
  * @swagger
@@ -103,7 +102,8 @@ router.post('/logout', logout);
  *       '500':
  *         $ref: '#/components/responses/internalServerError'
  */
-router.post('/forgotPassword', forgotPasswordValidation, forgotPassword);
+router.route('/forgot-password')
+        .post(validate(validation.forgotPassword), controller.forgotPassword);
 
 /**
  * @swagger
@@ -130,6 +130,7 @@ router.post('/forgotPassword', forgotPasswordValidation, forgotPassword);
  *       '500':
  *         $ref: '#/components/responses/internalServerError'
  */
-router.post('/resetPassword', verifyJwtToken, resetPasswordValidation, resetPassword);
+router.route('/reset-password')
+        .post(verifyJwtToken, validate(validation.resetPassword), controller.resetPassword);
 
 module.exports = router;
