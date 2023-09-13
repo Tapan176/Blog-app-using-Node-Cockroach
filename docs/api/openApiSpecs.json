@@ -1,0 +1,171 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Blog API Documentation",
+    "description": "API documentation for the Blog app",
+    "version": "1.0.0",
+    "servers": {
+      "url": "http://localhost:3000",
+      "description": "Local server"
+    }
+  },
+  "basePath": "/",
+  "apis": [
+    "./src/**/*.route.js"
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/auth/requestContract.json#/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "$ref": "components/auth/responseContract.json#/successfulLogin"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/incorrectPassword"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/authenticationFailed"
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "User signup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/auth/requestContract.json#/UserSignUp"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "components/auth/responseContract.json#/successfulSignup"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/passwordAndConfirmPasswordDoNotMatch"
+          },
+          "409": {
+            "$ref": "components/errorContract.json#/userAlreadyExists"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/failedToRegisterUser"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "User logout",
+        "responses": {
+          "204": {
+            "$ref": "components/auth/responseContract.json#/successfulLogout"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/userHasNotLogin"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/logoutFailed"
+          }
+        }
+      }
+    },
+    "/auth/forgotPassword": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Forgot password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/auth/requestContract.json#/ForgotPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/auth/responseContract.json#/passwordResetEmailSent"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/auth/resetPassword": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Reset password",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/auth/requestContract.json#/ResetPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/auth/responseContract.json#/passwordResetSuccessful"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/badRequest"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ const validation = require('./auth.validation');
 
 /**
 * @swagger
-* /login:
+* /auth/login:
 *   post:
 *     tags:
 *       - Authentication
@@ -24,112 +24,112 @@ const validation = require('./auth.validation');
 *       required: true
 *       content:
 *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserLogin'
- *     responses:
- *       '204':
- *         $ref: '#/components/responses/successfulLogin'
- *       '401':
- *         $ref: '#/components/responses/incorrectPassword'
- *       '500':
- *         $ref: '#/components/responses/authenticationFailed'
- */
+*           schema:
+*             $ref: 'components/auth/requestContract.json#/UserLogin'
+*     responses:
+*       '204':
+*         $ref: 'components/auth/responseContract.json#/successfulLogin'
+*       '401':
+*         $ref: 'components/errorContract.json#/incorrectPassword'
+*       '500':
+*         $ref: 'components/errorContract.json#/authenticationFailed'
+*/
 router.route('/login')
         .post(validate(validation.login), controller.login);
 
 /**
- * @swagger
- * /signup:
- *   post:
- *     tags:
- *       - Authentication
- *     summary: User signup
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserSignUp'
- *     responses:
- *       '201':
- *         $ref: '#/components/responses/successfulSignup'
- *       '409':
- *         $ref: '#/components/responses/userAlreadyExists'
- *       '400':
- *         $ref: '#/components/responses/passwordAndConfirmPasswordDoNotMatch'
- *       '500':
- *         $ref: '#/components/responses/failedToRegisterUser'
- */
+* @swagger
+* /auth/signup:
+*   post:
+*     tags:
+*       - Authentication
+*     summary: User signup
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: 'components/auth/requestContract.json#/UserSignUp'
+*     responses:
+*       '201':
+*         $ref: 'components/auth/responseContract.json#/successfulSignup'
+*       '409':
+*         $ref: 'components/errorContract.json#/userAlreadyExists'
+*       '400':
+*         $ref: 'components/errorContract.json#/passwordAndConfirmPasswordDoNotMatch'
+*       '500':
+*         $ref: 'components/errorContract.json#/failedToRegisterUser'
+*/
 router.route('/signup')
         .post(validate(validation.signUp), controller.signup);
 
 /**
- * @swagger
- * /logout:
- *   post:
- *     tags:
- *       - Authentication
- *     summary: User logout
- *     responses:
- *       '204':
- *         $ref: '#/components/responses/successfulLogout'
- *       '400':
- *         $ref: '#/components/responses/userHasNotLogin'
- *       '500':
- *         $ref: '#/components/responses/logoutFailed'
- */
+* @swagger
+* /auth/logout:
+*   post:
+*     tags:
+*       - Authentication
+*     summary: User logout
+*     responses:
+*       '204':
+*         $ref: 'components/auth/responseContract.json#/successfulLogout'
+*       '400':
+*         $ref: 'components/errorContract.json#/userHasNotLogin'
+*       '500':
+*         $ref: 'components/errorContract.json#/logoutFailed'
+*/
 router.route('/logout')
         .post(controller.logout);
 
 /**
- * @swagger
- * /forgotPassword:
- *   post:
- *     tags:
- *       - Authentication
- *     summary: Forgot password
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ForgotPassword'
- *     responses:
- *       '200':
- *         $ref: '#/components/responses/passwordResetEmailSent'
- *       '404':
- *         $ref: '#/components/responses/userNotFound'
- *       '500':
- *         $ref: '#/components/responses/internalServerError'
- */
+* @swagger
+* /auth/forgotPassword:
+*   post:
+*     tags:
+*       - Authentication
+*     summary: Forgot password
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: 'components/auth/requestContract.json#/ForgotPassword'
+*     responses:
+*       '200':
+*         $ref: 'components/auth/responseContract.json#/passwordResetEmailSent'
+*       '404':
+*         $ref: 'components/errorContract.json#/userNotFound'
+*       '500':
+*         $ref: 'components/errorContract.json#/internalServerError'
+*/
 router.route('/forgot-password')
         .post(validate(validation.forgotPassword), controller.forgotPassword);
 
 /**
- * @swagger
- * /resetPassword:
- *   post:
- *     tags:
- *       - Authentication
- *     summary: Reset password
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ResetPassword'
- *     responses:
- *       '200':
- *         $ref: '#/components/responses/passwordResetSuccessful'
- *       '404':
- *         $ref: '#/components/responses/userNotFound'
- *       '400':
- *         $ref: '#/components/responses/badRequest'
- *       '500':
- *         $ref: '#/components/responses/internalServerError'
- */
+* @swagger
+* /auth/resetPassword:
+*   post:
+*     tags:
+*       - Authentication
+*     summary: Reset password
+*     security:
+*       - bearerAuth: []
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: 'components/auth/requestContract.json#/ResetPassword'
+*     responses:
+*       '200':
+*         $ref: 'components/auth/responseContract.json#/passwordResetSuccessful'
+*       '404':
+*         $ref: 'components/errorContract.json#/userNotFound'
+*       '400':
+*         $ref: 'components/errorContract.json#/badRequest'
+*       '500':
+*         $ref: 'components/errorContract.json#/internalServerError'
+*/
 router.route('/reset-password')
         .post(verifyJwtToken, validate(validation.resetPassword), controller.resetPassword);
 

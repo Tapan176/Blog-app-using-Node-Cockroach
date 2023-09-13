@@ -6,14 +6,14 @@ module.exports = {
             req.user = req.session.user;
             return next();
         } else {
-            res.status(401).json({ code: 'please_login', message: 'Please login' });
+            throw new Error('please_login');
         }
     },
     authenticateAdmin: async (req, res, next) => {
         if(req.session.user.role == 'admin'){
             return next();
         } else {
-            res.status(401).json({ code: 'unauthorized', message: 'unauthorized' });
+            throw new Error('unauthorized');
         }
     },
     verifyJwtToken: async (req, res, next) => {

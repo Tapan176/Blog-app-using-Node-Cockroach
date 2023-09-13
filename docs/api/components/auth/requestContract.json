@@ -1,0 +1,70 @@
+{
+    "UserSignUp": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "email": {
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            },
+            "confirmPassword": {
+                "type": "string"
+            },
+            "address": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "name",
+            "email",
+            "password",
+            "confirmPassword",
+            "address"
+        ]
+    },
+    "UserLogin": {
+        "type": "object",
+        "properties": {
+            "email": {
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "email",
+            "password"
+        ]
+    },
+    "ForgotPassword": {
+        "type": "object",
+        "properties": {
+            "email": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "email"
+        ]
+    },
+    "ResetPassword": {
+        "type": "object",
+        "properties": {
+            "newPassword": {
+                "type": "string"
+            },
+            "confirmPassword": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "newPassword",
+            "confirmPassword"
+        ]
+    }
+}

@@ -8,7 +8,7 @@ module.exports = {
     login: async (email, password) => {
         const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const queryResult = await dal.selectUserByEmail(dbClient, [email]);
+            const queryResult = await dal.selectUserByEmail(dbClient, {email: email});
 
             const passwordMatch = await bcrypt.compare(password, queryResult.rows[0].passwordHash);
 
@@ -24,7 +24,7 @@ module.exports = {
     signup: async (firstName, lastName, email, password) => {
         const dbClient = await cockroachLib.dbCponnectionPool.connect();
         try {
-            const existingUser = await dal.selectUserByEmail(dbClient, [email]);
+            const existingUser = await dal.selectUserByEmail(dbClient, {email: email});
 
             if (existingUser.rowCount > 0) {
                 throw new Error('user_already_exists');
@@ -32,7 +32,7 @@ module.exports = {
            
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const queryResult = await dal.insertUser(dbClient, [firstName, lastName, email, hashedPassword]);
+            const queryResult = await dal.insertUser(dbClient, {firstName: firstName, lastName: lastName, email: email, hashedPassword: hashedPassword});
 
             return queryResult;
             
@@ -61,7 +61,7 @@ module.exports = {
         try {
           const decoded = jwt.verify(token, process.env.JWT_SECRET);     
 
-          const existingUser = await dal.selectUserByEmail(dbClient, [email]);     
+          const existingUser = await dal.selectUserByEmail(dbClient, {email: email});     
 
           const passwordMatch = await bcrypt.compare(newPassword, existingUser.rows[0].passwordHash);
       
@@ -71,7 +71,7 @@ module.exports = {
       
           const hashedPassword = await bcrypt.hash(newPassword, 10);
           
-          const queryResult = await dal.updatePassword(dbClient, [hashedPassword, decoded.email]);
+          const queryResult = await dal.updatePassword(dbClient, {hashedPassword: hashedPassword, email: decoded.email});
       
           return queryResult.rows[0];
         } finally {

@@ -154,4 +154,14 @@ module.exports = {
     message: 'Invalid search string',
     statusCode: 400,
   },
+  unauthorized: {
+    code: 'unauthorized',
+    message: 'You are not authorized',
+    statusCode: 401,
+  },
+  please_login: {
+    code: 'please_login',
+    message: 'Please login',
+    statusCode: 401,
+  }
 };

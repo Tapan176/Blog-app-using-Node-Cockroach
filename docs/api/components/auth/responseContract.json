@@ -1,0 +1,17 @@
+{
+  "successfulLogin": {
+    "description": "Successful login"
+  },
+  "successfulSignup": {
+    "description": "Successful signup"
+  },
+  "successfulLogout": {
+    "description": "Successful logout"
+  },
+  "passwordResetEmailSent": {
+    "description": "Password reset email sent"
+  },
+  "passwordResetSuccessful": {
+    "description": "Password reset successful"
+  }
+}

@@ -9,20 +9,20 @@ module.exports = {
     },
     selectArticleById: async (dbClient, blogData) => {
         const sqlStmt = `
-            SELECT "a".* 
-                   ,"t"."title" AS "category"
-                   ,"u"."firstName"
-                   ,"u"."lastName" 
-                   ,"u"."email" 
-                   ,"c".*
-            FROM "articles" AS "a"
-            JOIN "users" AS "u" 
-            ON "a"."userId" = "u"."id"
-            LEFT JOIN "comments" AS "c" 
-            ON "a"."id" = "c"."articleId"
-            LEFT JOIN "categories" AS "t" 
-            ON "a"."categoryId" = "t"."id"
-            WHERE "a"."id" = $1
+            SELECT "article".* 
+                   ,"category"."title" AS "tag"
+                   ,"user"."firstName"
+                   ,"user"."lastName" 
+                   ,"user"."email" 
+                   ,"comment".*
+            FROM "articles" AS "article"
+            JOIN "users" AS "user" 
+            ON "article"."userId" = "user"."id"
+            LEFT JOIN "comments" AS "comment" 
+            ON "article"."id" = "comment"."articleId"
+            LEFT JOIN "categories" AS "category" 
+            ON "article"."categoryId" = "category"."id"
+            WHERE "article"."id" = $1
             ;`;
         const parameters = [blogData.blogId];
         const queryResult = await dbClient.query(sqlStmt, parameters);
@@ -140,21 +140,19 @@ module.exports = {
         const queryResult = await dbClient.query(sqlStmt, parameters);
         return queryResult;
     },
-
     searchArticle: async (dbClient, blogData) => {
         const sqlStmt = `
-            SELECT "a".*
-            FROM "articles" "a"
-            LEFT JOIN "users" "u" 
-            ON "a"."userId" = "u"."id"
-            WHERE "a"."title" LIKE $1
-            OR "a"."body" LIKE $1
-            OR "u"."firstName" LIKE $1
-            OR "u"."lastName" LIKE $1
+            SELECT "article".*
+            FROM "articles" "article"
+            LEFT JOIN "users" "user" 
+            ON "article"."userId" = "user"."id"
+            WHERE "article"."title" ILIKE '%' || $1 || '%'
+            OR "article"."body" ILIKE '%' || $1 || '%'
+            OR "user"."firstName" ILIKE '%' || $1 || '%'
+            OR "user"."lastName" ILIKE '%' || $1 || '%'
             ;`;
         const parameters = [blogData.searchString];
         const queryResult = await dbClient.query(sqlStmt, parameters);
-        console.log(queryResult.rows);
         return queryResult;
     }
 };
