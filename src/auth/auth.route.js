@@ -83,7 +83,7 @@ router.route('/logout')
 
 /**
 * @swagger
-* /auth/forgotPassword:
+* /auth/forgot-password:
 *   post:
 *     tags:
 *       - Authentication
@@ -107,7 +107,7 @@ router.route('/forgot-password')
 
 /**
 * @swagger
-* /auth/resetPassword:
+* /auth/reset-password:
 *   post:
 *     tags:
 *       - Authentication

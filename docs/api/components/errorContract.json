@@ -4,11 +4,11 @@
         "properties": {
             "code": {
                 "type": "string",
-                "description": "incorrect_password"
+                "description": "Error code"
             },
             "message": {
                 "type": "string",
-                "description": "${type}"
+                "description": "Error message"
             }
         },
         "required": [
@@ -116,8 +116,128 @@
             }
         }
     },
-    "invalidRequest": {
-        "description": "Invalid request",
+    "invalidToken": {
+        "description": "Invalid token",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidVerification": {
+        "description": "Invalid verification",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "addBlogFailed": {
+        "description": "Failed to add blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "fetchBlogsFailed": {
+        "description": "Failed to fetch blogs",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "updateBlogFailed": {
+        "description": "Failed to update blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "deleteBlogFailed": {
+        "description": "Failed to delete blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogAlreadyExist": {
+        "description": "Blog already exists for the user",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogNotFound": {
+        "description": "Blog not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogNotAuthorized": {
+        "description": "You are not authorized to update or delete this blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidCategoryId": {
+        "description": "Invalid category ID",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "categoryNotFound": {
+        "description": "Category not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidSearchString": {
+        "description": "Invalid search string",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "unauthorized": {
+        "description": "Unauthorized",
         "content": {
             "application/json": {
                 "schema": {
@@ -130,6 +250,30 @@
                         "code": {
                             "type": "string",
                             "description": "Error code"
+                        }
+                    },
+                    "required": [
+                        "message",
+                        "code"
+                    ]
+                }
+            }
+        }
+    },
+    "invalidRequest": {
+        "description": "Invalid request",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
                         }
                     },
                     "required": [
@@ -147,13 +291,13 @@
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "Error message"
-                        },
                         "code": {
                             "type": "string",
                             "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
                         }
                     },
                     "required": [
@@ -171,13 +315,13 @@
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "Error message"
-                        },
                         "code": {
                             "type": "string",
                             "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
                         }
                     },
                     "required": [

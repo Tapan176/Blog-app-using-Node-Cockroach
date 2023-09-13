@@ -13,17 +13,13 @@
             },
             "confirmPassword": {
                 "type": "string"
-            },
-            "address": {
-                "type": "string"
             }
         },
         "required": [
             "name",
             "email",
             "password",
-            "confirmPassword",
-            "address"
+            "confirmPassword"
         ]
     },
     "UserLogin": {

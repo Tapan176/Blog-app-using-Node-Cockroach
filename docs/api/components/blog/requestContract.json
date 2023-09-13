@@ -1,0 +1,68 @@
+{
+    "AddBlog": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "categoryId": {
+                "type": "string",
+                "description": "The ID of the category the item belongs to."
+            },
+            "body": {
+                "type": "string"
+            },
+            "userId": {
+                "type": "string",
+                "description": "The ID of the user who owns the item."
+            }
+        },
+        "required": [
+            "title",
+            "categoryId",
+            "body",
+            "userId"
+        ]
+    },
+    "UpdateBlog": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "categoryId": {
+                "type": "string",
+                "description": "The ID of the category the item belongs to."
+            },
+            "body": {
+                "type": "string"
+            },
+            "userId": {
+                "type": "string",
+                "description": "The ID of the user who owns the item."
+            }
+        },
+        "required": [
+            "title",
+            "categoryId",
+            "body",
+            "userId"
+        ]
+    }
+}

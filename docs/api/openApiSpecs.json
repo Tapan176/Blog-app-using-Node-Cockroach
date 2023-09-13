@@ -94,7 +94,7 @@
         }
       }
     },
-    "/auth/forgotPassword": {
+    "/auth/forgot-password": {
       "post": {
         "tags": [
           "Authentication"
@@ -123,7 +123,7 @@
         }
       }
     },
-    "/auth/resetPassword": {
+    "/auth/reset-password": {
       "post": {
         "tags": [
           "Authentication"
@@ -159,13 +159,313 @@
           }
         }
       }
+    },
+    "/blog/blogs": {
+      "get": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Get all blogs",
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulRetrievalOfAllBlogs"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Add a blog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/blog/requestContract.json#/AddBlog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulAdditionOfBlog"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/userHasNotLogin"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "409": {
+            "$ref": "components/errorContract.json#/blogAlreadyExist"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/blog/blogs/search": {
+      "get": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Search blogs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "searchString",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulRetrievalOfSearchResults"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/badRequest"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/blog/blogs/myblogs": {
+      "get": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Get user's blogs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulRetrievalOfUserBlogs"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/blog/blogs/:blogId": {
+      "get": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Get an blog by its ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulRetrievalOfBlog"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/blogNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Edit a blog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/blog/requestContract.json#/UpdateBlog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulUpdateOfBlog"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/badRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/blogNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Delete a blog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulDeletionOfBlog"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/badRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/blogNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/blog/blogs/categories/:categoryId": {
+      "get": {
+        "tags": [
+          "Blog"
+        ],
+        "summary": "Get blogs by category",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "categoryId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/blog/responseContract.json#/successfulRetrievalOfBlogsByCategory"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/blogNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/comment/blogs/:blogId/comments": {
+      "get": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Get all comments"
+      },
+      "post": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Add a comment"
+      }
+    },
+    "/comment/blogs/:blogId/comments/:commentId": {
+      "put": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Edit a comment"
+      },
+      "delete": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Delete a comment"
+      }
     }
   },
-  "components": {},
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "$ref": "components/errorContract.json#/badRequest"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
   "tags": [
     {
       "name": "Authentication",
       "description": "User authentication endpoints"
+    },
+    {
+      "name": "Blog",
+      "description": "Blog endpoints"
+    },
+    {
+      "name": "Comment",
+      "description": "Comment endpoints"
     }
   ]
 }

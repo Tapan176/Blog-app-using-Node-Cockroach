@@ -129,16 +129,6 @@ module.exports = {
     message: 'Failed to delete blog from comment',
     statusCode: 500,
   },
-  empty_comment_failed: {
-    code: 'empty_comment_failed',
-    message: 'Failed to empty comment',
-    statusCode: 500,
-  },
-  empty_comment: {
-    code: 'empty_comment',
-    message: 'comment is empty',
-    statusCode: 400,
-  },
   invalid_category_id: {
     code: 'invalid_category_id',
     message: 'Invalid category ID',
