@@ -14,9 +14,6 @@ const { authenticateUser } = require('../middleware/passport');
 /**
 * @swagger
 * components:
-*   responses:
-*     BadRequest:
-*       $ref: 'components/errorContract.json#/badRequest'
 *   securitySchemes:
 *     bearerAuth:
 *       type: http
@@ -51,8 +48,6 @@ const { authenticateUser } = require('../middleware/passport');
 *     responses:
 *       '200':
 *         $ref: 'components/blog/responseContract.json#/successfulAdditionOfBlog'       
-*       '400':
-*         $ref: 'components/errorContract.json#/userHasNotLogin'
 *       '401':
 *         $ref: 'components/errorContract.json#/unauthorized'
 *       '409':
@@ -120,7 +115,7 @@ router.route('/blogs/myblogs')
 *         name: blogId
 *         required: true
 *         schema:
-*           type: string
+*           type: integer
 *     responses:
 *       '200':
 *         $ref: 'components/blog/responseContract.json#/successfulRetrievalOfBlog'   
@@ -139,7 +134,7 @@ router.route('/blogs/myblogs')
 *         name: blogId
 *         required: true
 *         schema:
-*           type: string
+*           type: integer
 *     requestBody:
 *       required: true
 *       content:
@@ -168,7 +163,7 @@ router.route('/blogs/myblogs')
 *         name: blogId
 *         required: true
 *         schema:
-*           type: string
+*           type: integer
 *     responses:
 *       '200':
 *         $ref: 'components/blog/responseContract.json#/successfulDeletionOfBlog'
@@ -198,7 +193,7 @@ router.route('/blogs/:blogId')
 *         name: categoryId
 *         required: true
 *         schema:
-*           type: string
+*           type: integer
 *     responses:
 *       '200':
 *         $ref: 'components/blog/responseContract.json#/successfulRetrievalOfBlogsByCategory'

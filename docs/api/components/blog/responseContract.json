@@ -27,7 +27,7 @@
             "likes": {
                 "type": "number"
             },
-            "dilikes": {
+            "dislikes": {
                 "type": "number"
             }
         },
@@ -52,7 +52,14 @@
         }
     },
     "successfulAdditionOfBlog": {
-        "description": "Successful addition of an blog"
+        "description": "Successful addition of an blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Blog"
+                }
+            }
+        }
     },
     "successfulRetrievalOfUserBlogs": {
         "description": "Successful retrieval of user blogs",

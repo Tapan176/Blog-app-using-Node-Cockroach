@@ -186,6 +186,16 @@
             }
         }
     },
+    "userAlreadyExist": {
+        "description": "User already exists",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
     "blogNotFound": {
         "description": "Blog not found",
         "content": {
@@ -236,6 +246,16 @@
             }
         }
     },
+    "commentNotFound": {
+        "description": "Comment not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
     "unauthorized": {
         "description": "Unauthorized",
         "content": {
@@ -243,18 +263,18 @@
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "Error message"
-                        },
                         "code": {
                             "type": "string",
                             "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
                         }
                     },
                     "required": [
-                        "message",
-                        "code"
+                        "code",
+                        "message"
                     ]
                 }
             }

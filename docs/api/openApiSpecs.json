@@ -199,9 +199,6 @@
           "200": {
             "$ref": "components/blog/responseContract.json#/successfulAdditionOfBlog"
           },
-          "400": {
-            "$ref": "components/errorContract.json#/userHasNotLogin"
-          },
           "401": {
             "$ref": "components/errorContract.json#/unauthorized"
           },
@@ -279,7 +276,7 @@
             "name": "blogId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -311,7 +308,7 @@
             "name": "blogId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -359,7 +356,7 @@
             "name": "blogId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -394,7 +391,7 @@
             "name": "categoryId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -416,13 +413,73 @@
         "tags": [
           "Comment"
         ],
-        "summary": "Get all comments"
+        "summary": "Get all comments",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/comment/responseContract.json#/successfulRetrievalOfComments"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
       },
       "post": {
         "tags": [
           "Comment"
         ],
-        "summary": "Add a comment"
+        "summary": "Add a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/comment/requestContract.json#/AddComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/comment/responseContract.json#/successfulAdditionToComment"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/invalidRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
       }
     },
     "/comment/blogs/:blogId/comments/:commentId": {
@@ -430,22 +487,382 @@
         "tags": [
           "Comment"
         ],
-        "summary": "Edit a comment"
+        "summary": "Edit a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/comment/requestContract.json#/AddComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/comment/responseContract.json#/successfulUpdationOfComment"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/invalidRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/commentNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
       },
       "delete": {
         "tags": [
           "Comment"
         ],
-        "summary": "Delete a comment"
+        "summary": "Delete a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/comment/responseContract.json#/successfulDeletionOfComment"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/commentNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/user/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulRetrievalOfAllUsers"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Add a user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/user/requestContract.json#/AddUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulAdditionOfUser"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "409": {
+            "$ref": "components/errorContract.json#/userAlreadyExist"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/user/users/email": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get user by email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/user/requestContract.json#/GetUserByEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulRetrievalOfUserByEmail"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/user/users/:id": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulRetrievalOfUserById"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Edit a user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/user/requestContract.json#/UpdateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulUpdationOfUser"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/invalidRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Delete a user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulDeletionOfUser"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "404": {
+            "$ref": "components/errorContract.json#/userNotFound"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/user/users/change-password": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change user's password",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/user/requestContract.json#/UpdateUserPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulUpdationOfUserPassword"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/invalidRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
+      }
+    },
+    "/user/users/change-name": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change user's name",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "components/user/requestContract.json#/UpdateUserName"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "components/user/responseContract.json#/successfulUpdationOfUserName"
+          },
+          "400": {
+            "$ref": "components/errorContract.json#/invalidRequest"
+          },
+          "401": {
+            "$ref": "components/errorContract.json#/unauthorized"
+          },
+          "500": {
+            "$ref": "components/errorContract.json#/internalServerError"
+          }
+        }
       }
     }
   },
   "components": {
-    "responses": {
-      "BadRequest": {
-        "$ref": "components/errorContract.json#/badRequest"
-      }
-    },
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
@@ -466,6 +883,14 @@
     {
       "name": "Comment",
       "description": "Comment endpoints"
+    },
+    {
+      "name": "Admin",
+      "description": "Admin endpoints"
+    },
+    {
+      "name": "User",
+      "description": "User endpoints"
     }
   ]
 }

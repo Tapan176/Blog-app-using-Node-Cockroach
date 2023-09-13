@@ -1,0 +1,99 @@
+{
+    "User": {
+        "type": "object",
+        "properties": {
+            "firstName": {
+                "type": "string"
+            },
+            "lastName": {
+                "type": "string"
+            },
+            "email": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "role": {
+                "type": "string"
+            },
+            "isVerified": {
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "firstName",
+            "lastName",
+            "email",
+            "createdAt",
+            "updatedAt",
+            "role",
+            "isVerified"
+        ]
+    },
+    "successfulRetrievalOfAllUsers": {
+        "description": "All users retrieved successfully",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "array",
+                    "$ref": "#/User"
+                }
+            }
+        }
+    },
+    "successfulAdditionOfUser": {
+        "description": "User added successfully",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/User"
+                }
+            }
+        }
+    },
+    "successfulRetrievalOfUserById": {
+        "description": "User successfully retrieved using ID",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/User"
+                }
+            }
+        }
+    },
+    "successfulRetrievalOfUserByEmail": {
+        "description": "User successfully retrieved using email",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/User"
+                }
+            }
+        }
+    },
+    "successfulUpdationOfUser": {
+        "description": "User updated successfully",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/User"
+                }
+            }
+        }
+    },
+    "successfulDeletionOfUser": {
+        "description": "User deleted successfully"
+    },
+    "successfulUpdationOfUserPassword": {
+      "description": "Password updated successfully"
+    },
+    "successfulUpdationOfUserName": {
+      "description": "Name updated successfully"
+    }
+  }
