@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 const controller = require('./comment.controller');
@@ -70,8 +71,8 @@ const { authenticateUser } = require('../middleware/passport');
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/:blogId/comments')
-        .get(controller.getAllComments)
-        .post(authenticateUser, controller.addComment);
+  .get(controller.getAllComments)
+  .post(authenticateUser, controller.addComment);
 
 /**
 * @swagger
@@ -137,8 +138,8 @@ router.route('/blogs/:blogId/comments')
 *       '500':
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
-router.route('/blogs/:blogId/comments/:commentId') 
-        .put(authenticateUser, controller.editComment)
-        .delete(authenticateUser, controller.deleteComment);
+router.route('/blogs/:blogId/comments/:commentId')
+  .put(authenticateUser, controller.editComment)
+  .delete(authenticateUser, controller.deleteComment);
 
-module.exports = router ;
+module.exports = router;

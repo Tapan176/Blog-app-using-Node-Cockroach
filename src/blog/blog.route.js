@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 const controller = require('./blog.controller');
@@ -47,7 +48,7 @@ const { authenticateUser } = require('../middleware/passport');
 *             $ref: 'components/blog/requestContract.json#/AddBlog'
 *     responses:
 *       '200':
-*         $ref: 'components/blog/responseContract.json#/successfulAdditionOfBlog'       
+*         $ref: 'components/blog/responseContract.json#/successfulAdditionOfBlog'
 *       '401':
 *         $ref: 'components/errorContract.json#/unauthorized'
 *       '409':
@@ -56,8 +57,8 @@ const { authenticateUser } = require('../middleware/passport');
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs')
-        .get(controller.getAllArticles)
-        .post(authenticateUser, controller.addArticle);
+  .get(controller.getAllArticles)
+  .post(authenticateUser, controller.addArticle);
 
 /**
 * @swagger
@@ -81,7 +82,7 @@ router.route('/blogs')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/search')
-        .get(controller.searchArticle);
+  .get(controller.searchArticle);
 
 /**
 * @swagger
@@ -101,7 +102,7 @@ router.route('/blogs/search')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/myblogs')
-        .get(authenticateUser, controller.getUserArticles);
+  .get(authenticateUser, controller.getUserArticles);
 
 /**
 * @swagger
@@ -118,7 +119,7 @@ router.route('/blogs/myblogs')
 *           type: integer
 *     responses:
 *       '200':
-*         $ref: 'components/blog/responseContract.json#/successfulRetrievalOfBlog'   
+*         $ref: 'components/blog/responseContract.json#/successfulRetrievalOfBlog'
 *       '404':
 *         $ref: 'components/errorContract.json#/blogNotFound'
 *       '500':
@@ -143,7 +144,7 @@ router.route('/blogs/myblogs')
 *             $ref: 'components/blog/requestContract.json#/UpdateBlog'
 *     responses:
 *       '200':
-*         $ref: 'components/blog/responseContract.json#/successfulUpdateOfBlog' 
+*         $ref: 'components/blog/responseContract.json#/successfulUpdateOfBlog'
 *       '400':
 *         $ref: 'components/errorContract.json#/badRequest'
 *       '401':
@@ -177,9 +178,9 @@ router.route('/blogs/myblogs')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/:blogId')
-        .get(controller.getArticlesById)
-        .put(authenticateUser, controller.editArticle)
-        .delete(authenticateUser, controller.deleteArticle);
+  .get(controller.getArticlesById)
+  .put(authenticateUser, controller.editArticle)
+  .delete(authenticateUser, controller.deleteArticle);
 
 /**
 * @swagger
@@ -203,6 +204,6 @@ router.route('/blogs/:blogId')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/categories/:categoryId')
-        .get(controller.getArticlesByCategory);
+  .get(controller.getArticlesByCategory);
 
 module.exports = router;

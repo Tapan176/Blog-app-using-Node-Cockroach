@@ -153,5 +153,5 @@ module.exports = {
     code: 'please_login',
     message: 'Please login',
     statusCode: 401,
-  }
+  },
 };

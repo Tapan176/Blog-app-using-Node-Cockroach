@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 const controller = require('./user.controller');
@@ -50,7 +51,7 @@ const { authenticateUser, authenticateAdmin } = require('../middleware/passport'
 *             $ref: 'components/user/requestContract.json#/AddUser'
 *     responses:
 *       '200':
-*         $ref: 'components/user/responseContract.json#/successfulAdditionOfUser'       
+*         $ref: 'components/user/responseContract.json#/successfulAdditionOfUser'
 *       '401':
 *         $ref: 'components/errorContract.json#/unauthorized'
 *       '409':
@@ -59,8 +60,8 @@ const { authenticateUser, authenticateAdmin } = require('../middleware/passport'
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users')
-        .get(authenticateAdmin, controller.getAllUserDetails)
-        .post(authenticateAdmin, controller.createUser);
+  .get(authenticateAdmin, controller.getAllUserDetails)
+  .post(authenticateAdmin, controller.createUser);
 
 /**
 * @swagger
@@ -86,7 +87,7 @@ router.route('/users')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/email')
-        .get(authenticateAdmin, controller.getUserDetailsByEmail);
+  .get(authenticateAdmin, controller.getUserDetailsByEmail);
 
 /**
 * @swagger
@@ -165,9 +166,9 @@ router.route('/users/email')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/:id')
-        .get(authenticateAdmin, controller.getUserDetailsById)
-        .put(authenticateAdmin, controller.editUser)
-        .delete(authenticateAdmin, controller.deleteUser);
+  .get(authenticateAdmin, controller.getUserDetailsById)
+  .put(authenticateAdmin, controller.editUser)
+  .delete(authenticateAdmin, controller.deleteUser);
 
 /**
 * @swagger
@@ -212,7 +213,7 @@ router.route('/users/:id')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/change-password')
-        .put(authenticateUser, controller.changePassword);
+  .put(authenticateUser, controller.changePassword);
 
 /**
 * @swagger
@@ -240,6 +241,6 @@ router.route('/users/change-password')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/change-name')
-        .put(authenticateUser, controller.changeName);
+  .put(authenticateUser, controller.changeName);
 
 module.exports = router;

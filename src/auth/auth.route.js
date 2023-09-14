@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const { validate } = require('express-validation');
 
@@ -35,7 +36,7 @@ const validation = require('./auth.validation');
 *         $ref: 'components/errorContract.json#/authenticationFailed'
 */
 router.route('/login')
-        .post(validate(validation.login), controller.login);
+  .post(validate(validation.login), controller.login);
 
 /**
 * @swagger
@@ -61,7 +62,7 @@ router.route('/login')
 *         $ref: 'components/errorContract.json#/failedToRegisterUser'
 */
 router.route('/signup')
-        .post(validate(validation.signUp), controller.signup);
+  .post(validate(validation.signUp), controller.signup);
 
 /**
 * @swagger
@@ -79,7 +80,7 @@ router.route('/signup')
 *         $ref: 'components/errorContract.json#/logoutFailed'
 */
 router.route('/logout')
-        .post(controller.logout);
+  .post(controller.logout);
 
 /**
 * @swagger
@@ -103,7 +104,7 @@ router.route('/logout')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/forgot-password')
-        .post(validate(validation.forgotPassword), controller.forgotPassword);
+  .post(validate(validation.forgotPassword), controller.forgotPassword);
 
 /**
 * @swagger
@@ -131,6 +132,6 @@ router.route('/forgot-password')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/reset-password')
-        .post(verifyJwtToken, validate(validation.resetPassword), controller.resetPassword);
+  .post(verifyJwtToken, validate(validation.resetPassword), controller.resetPassword);
 
 module.exports = router;
