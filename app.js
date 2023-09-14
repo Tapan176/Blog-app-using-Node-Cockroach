@@ -12,7 +12,7 @@ if (dotenvResult.error) {
 }
 
 const app = express();
-PORT = process.env.PORT;
+const { PORT } = process.env;
 
 app.use(cookieParser());
 app.use(session({
@@ -33,6 +33,7 @@ app.use('/', routes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is running on ${PORT}!`);
 });
 
