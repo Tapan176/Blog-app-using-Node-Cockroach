@@ -1,9 +1,11 @@
 const express = require('express');
 
 const router = express.Router();
+const { validate } = require('express-validation');
 
 const controller = require('./comment.controller');
 const { authenticateUser } = require('../middleware/passport');
+const validation = require('./comment.validation');
 
 /**
 * @swagger
@@ -71,8 +73,8 @@ const { authenticateUser } = require('../middleware/passport');
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/:blogId/comments')
-  .get(controller.getAllComments)
-  .post(authenticateUser, controller.addComment);
+  .get(validate(validation.getAllComments), controller.getAllComments)
+  .post(authenticateUser, validate(validation.addComment), controller.addComment);
 
 /**
 * @swagger
@@ -139,7 +141,7 @@ router.route('/blogs/:blogId/comments')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/:blogId/comments/:commentId')
-  .put(authenticateUser, controller.editComment)
-  .delete(authenticateUser, controller.deleteComment);
+  .put(authenticateUser, validate(validation.editComment), controller.editComment)
+  .delete(authenticateUser, validate(validation.deleteComment), controller.deleteComment);
 
 module.exports = router;

@@ -1,18 +1,12 @@
 /* eslint-disable eqeqeq */
 const cockroachLib = require('../cockroach');
-const {
-  selectCommentsByArticleId,
-  insertComment,
-  updateComment,
-  deleteCommentById,
-  selectUserIdByCommentId,
-} = require('./comment.dal');
+const dal = require('./comment.dal');
 
 module.exports = {
   getAllComments: async (blogId) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(selectCommentsByArticleId, [blogId]);
+      const queryResult = await dal.selectCommentsByArticleId(dbClient, { blogId });
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -22,10 +16,10 @@ module.exports = {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
       if (userRole === 'admin') {
-        const queryResult = await dbClient.query(insertComment, [blogId, userIdByAdmin, comment]);
+        const queryResult = await dal.insertComment(dbClient, { blogId, userId: userIdByAdmin, comment });
         return queryResult.rows;
       }
-      const queryResult = await dbClient.query(insertComment, [blogId, userId, comment]);
+      const queryResult = await dal.insertComment(dbClient, { blogId, userId, comment });
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -35,15 +29,15 @@ module.exports = {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
       if (userRole === 'admin') {
-        const queryResult = await dbClient.query(updateComment, [comment, commentId]);
+        const queryResult = await dal.updateComment(dbClient, { comment, commentId });
         return queryResult.rows;
       }
-      const selectedBlogUserId = await dbClient.query(selectUserIdByCommentId, [commentId]);
+      const selectedBlogUserId = await dal.selectUserIdByCommentId(dbClient, { commentId });
 
       if (selectedBlogUserId.rows[0].userId != userId) {
         throw new Error('comment_not_authorized');
       }
-      const queryResult = await dbClient.query(updateComment, [comment, commentId]);
+      const queryResult = await dal.updateComment(dbClient, { comment, commentId });
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -53,15 +47,15 @@ module.exports = {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
       if (userRole === 'admin') {
-        const queryResult = await dbClient.query(deleteCommentById, [commentId]);
+        const queryResult = await dal.deleteCommentById(dbClient, { commentId });
         return queryResult.rows;
       }
-      const selectedBlogUserId = await dbClient.query(selectUserIdByCommentId, [commentId]);
+      const selectedBlogUserId = await dal.selectUserIdByCommentId(dbClient, { commentId });
 
       if (selectedBlogUserId.rows[0].userId != userId) {
         throw new Error('comment_not_authorized');
       }
-      const queryResult = await dbClient.query(deleteCommentById, [commentId]);
+      const queryResult = await dal.deleteCommentById(dbClient, { commentId });
       return queryResult.rows;
     } finally {
       dbClient.release();

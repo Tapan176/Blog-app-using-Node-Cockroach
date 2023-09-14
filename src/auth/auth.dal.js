@@ -26,6 +26,7 @@ module.exports = {
   selectUserByEmail: async (dbClient, userData) => {
     const sqlStmt = `
         SELECT 
+          "id",
           "firstName"
           ,"lastName"
           ,"email"

@@ -1,21 +1,12 @@
 const bcrypt = require('bcrypt');
 const cockroachLib = require('../cockroach');
-const {
-  selectAllUsers,
-  selectUserById,
-  selectUserByEmail,
-  insertUser,
-  updateUser,
-  deleteUserById,
-  updateUserPassword,
-  updateUserFullName,
-} = require('./user.dal');
+const dal = require('./user.dal');
 
 module.exports = {
   getAllUserDetails: async () => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(selectAllUsers);
+      const queryResult = await dal.selectAllUsers(dbClient);
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -24,7 +15,7 @@ module.exports = {
   getUserDetailsById: async (userId) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(selectUserById, [userId]);
+      const queryResult = await dal.selectUserById(dbClient, { userId });
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -33,33 +24,34 @@ module.exports = {
   getUserDetailsByEmail: async (userEmail) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(selectUserByEmail, [userEmail]);
+      const queryResult = await dal.selectUserByEmail(dbClient, { userEmail });
       return queryResult.rows;
     } finally {
       dbClient.release();
     }
   },
-  createUser: async (firstName, lastName, email, password, confirmPassword, isVerified, role) => {
+  createUser: async (firstName, lastName, email, password, isVerified, role) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const existingUser = await dbClient.query(selectUserByEmail, [email]);
+      const existingUser = await dal.selectUserByEmail(dbClient, { email });
 
       if (existingUser.rowCount > 0) {
         throw new Error('user_already_exists');
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const queryResult = await dbClient.query(
-        insertUser,
-        [
-          firstName,
-          lastName,
-          email,
-          hashedPassword,
-          isVerified,
-          role,
-        ],
-      );
+      const queryResult = await dal
+        .insertUser(
+          dbClient,
+          {
+            firstName,
+            lastName,
+            email,
+            hashedPassword,
+            isVerified,
+            role,
+          },
+        );
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -68,17 +60,18 @@ module.exports = {
   editUser: async (userId, firstName, lastName, email, isVerified, role) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(
-        updateUser,
-        [
-          firstName,
-          lastName,
-          email,
-          isVerified,
-          role,
-          userId,
-        ],
-      );
+      const queryResult = await dal
+        .updateUser(
+          dbClient,
+          {
+            firstName,
+            lastName,
+            email,
+            isVerified,
+            role,
+            userId,
+          },
+        );
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -87,7 +80,7 @@ module.exports = {
   deleteUser: async (userId) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const queryResult = await dbClient.query(deleteUserById, [userId]);
+      const queryResult = await dal.deleteUserById(dbClient, { userId });
       return queryResult.rows;
     } finally {
       dbClient.release();
@@ -96,7 +89,7 @@ module.exports = {
   changePassword: async (userId, oldPassword, newPassword) => {
     const dbClient = await cockroachLib.dbCponnectionPool.connect();
     try {
-      const findUser = await dbClient.query(selectUserById, [userId]);
+      const findUser = await dal.selectUserById(dbClient, { userId });
 
       const passwordMatch = await bcrypt.compare(oldPassword, findUser.rows[0].passwordHash);
 
@@ -111,14 +104,15 @@ module.exports = {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       const updatedAt = new Date().toISOString();
 
-      const queryResult = await dbClient.query(
-        updateUserPassword,
-        [
-          hashedPassword,
-          updatedAt,
-          userId,
-        ],
-      );
+      const queryResult = await dal
+        .updateUserPassword(
+          dbClient,
+          {
+            hashedPassword,
+            updatedAt,
+            userId,
+          },
+        );
 
       return queryResult.rows;
     } finally {
@@ -130,14 +124,16 @@ module.exports = {
     try {
       const updatedAt = new Date().toISOString();
 
-      const queryResult = await dbClient.query(
-        updateUserFullName,
-        [firstName,
-          lastName,
-          updatedAt,
-          userId,
-        ],
-      );
+      const queryResult = await dal
+        .updateUserFullName(
+          dbClient,
+          {
+            firstName,
+            lastName,
+            updatedAt,
+            userId,
+          },
+        );
 
       return queryResult.rows;
     } finally {

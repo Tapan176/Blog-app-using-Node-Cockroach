@@ -12,7 +12,7 @@ const validationSchema = {
     .required(),
   confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
   isVerified: Joi.boolean().required(),
-  role: Joi.string().valid('admin', 'user', 'author').required(),
+  userRole: Joi.string().valid('admin', 'user', 'author').required(),
   userId: Joi.number().integer().positive().required(),
 };
 
@@ -25,7 +25,7 @@ module.exports = {
       password: validationSchema.password,
       confirmPassword: validationSchema.confirmPassword,
       isVerified: validationSchema.isVerified,
-      role: validationSchema.role,
+      userRole: validationSchema.userRole,
     }),
   },
   editUser: {
@@ -34,7 +34,7 @@ module.exports = {
       lastName: validationSchema.lastName,
       email: validationSchema.email,
       isVerified: validationSchema.isVerified,
-      role: validationSchema.role,
+      userRole: validationSchema.userRole,
     }),
   },
   changePassword: {
