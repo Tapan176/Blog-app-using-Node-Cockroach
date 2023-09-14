@@ -5,20 +5,20 @@ const validationSchema = {
   body: Joi.string().required(),
   category: Joi.string().required(),
   searchString: Joi.string().required(),
-  userIdByAdmin: Joi.number().integer().positive(),
-  blogId: Joi.number().integer().positive().required(),
-  commentId: Joi.number().integer().positive().required(),
-  categoryId: Joi.number().integer().positive().required(),
+  userIdByAdmin: Joi.string(),
+  blogId: Joi.string().required(),
+  commentId: Joi.string().required(),
+  categoryId: Joi.string().required(),
 };
 
 module.exports = {
   getArticlesById: {
-    body: Joi.object({
+    params: Joi.object({
       blogId: validationSchema.blogId,
     }),
   },
   getArticlesByCategory: {
-    body: Joi.object({
+    params: Joi.object({
       categoryId: validationSchema.categoryId,
     }),
   },
@@ -31,20 +31,22 @@ module.exports = {
     }),
   },
   editArticle: {
-    body: Joi.object({
+    params: Joi.object({
       blogId: validationSchema.blogId,
+    }),
+    body: Joi.object({
       title: validationSchema.title,
       body: validationSchema.body,
       category: validationSchema.category,
     }),
   },
   deleteArticle: {
-    body: Joi.object({
+    params: Joi.object({
       blogId: validationSchema.blogId,
     }),
   },
   searchArticle: {
-    body: Joi.object({
+    query: Joi.object({
       searchString: validationSchema.searchString,
     }),
   },

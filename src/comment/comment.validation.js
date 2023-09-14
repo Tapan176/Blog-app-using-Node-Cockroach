@@ -2,32 +2,36 @@ const { Joi } = require('express-validation');
 
 const validationSchema = {
   comment: Joi.string().required(),
-  userIdByAdmin: Joi.number().integer().positive(),
-  blogId: Joi.number().integer().positive().required(),
-  commentId: Joi.number().integer().positive().required(),
+  userIdByAdmin: Joi.string().required(),
+  blogId: Joi.string().required().required(),
+  commentId: Joi.string().required().required(),
 };
 
 module.exports = {
   getAllComments: {
-    body: Joi.object({
+    params: Joi.object({
       blogId: validationSchema.blogId,
     }),
   },
   addComment: {
-    body: Joi.object({
+    params: Joi.object({
       blogId: validationSchema.blogId,
+    }),
+    body: Joi.object({
       comment: validationSchema.comment,
       userIdByAdmin: validationSchema.userIdByAdmin,
     }),
   },
   editComment: {
-    body: Joi.object({
+    params: Joi.object({
       commentId: validationSchema.commentId,
+    }),
+    body: Joi.object({
       comment: validationSchema.comment,
     }),
   },
   deleteComment: {
-    body: Joi.object({
+    params: Joi.object({
       commentId: validationSchema.commentId,
     }),
   },

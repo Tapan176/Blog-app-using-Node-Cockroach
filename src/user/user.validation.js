@@ -13,7 +13,7 @@ const validationSchema = {
   confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
   isVerified: Joi.boolean().required(),
   userRole: Joi.string().valid('admin', 'user', 'author').required(),
-  userId: Joi.number().integer().positive().required(),
+  userId: Joi.string().required().required(),
 };
 
 module.exports = {
@@ -56,12 +56,12 @@ module.exports = {
     }),
   },
   deleteUser: {
-    body: Joi.object({
+    params: Joi.object({
       userId: validationSchema.userId,
     }),
   },
   getUserDetailsById: {
-    body: Joi.object({
+    params: Joi.object({
       userId: validationSchema.userId,
     }),
   },
