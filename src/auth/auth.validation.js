@@ -8,6 +8,7 @@ const validationSchema = {
   password: Joi.string()
     .regex(/[a-zA-Z0-9@]{3,30}/)
     .required(),
+  confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
   firstName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
   lastName: Joi.string().regex(/[a-zA-Z]{3,30}/).required(),
 };
@@ -25,7 +26,7 @@ module.exports = {
       lastName: validationSchema.lastName,
       email: validationSchema.email,
       password: validationSchema.password,
-      confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+      confirmPassword: validationSchema.confirmPassword,
     }),
   },
   forgotPassword: {
@@ -36,7 +37,7 @@ module.exports = {
   resetPassword: {
     body: Joi.object({
       newPassword: validationSchema.password,
-      confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required(),
+      confirmPassword: validationSchema.confirmPassword,
     }),
   },
 };

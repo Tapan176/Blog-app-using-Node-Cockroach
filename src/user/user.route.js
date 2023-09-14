@@ -1,10 +1,13 @@
 const express = require('express');
 
 const router = express.Router();
+const { validate } = require('express-validation');
 
 const controller = require('./user.controller');
 
 const { authenticateUser, authenticateAdmin } = require('../middleware/passport');
+
+const validation = require('./user.validation');
 
 /**
 * @swagger
@@ -61,7 +64,7 @@ const { authenticateUser, authenticateAdmin } = require('../middleware/passport'
 */
 router.route('/users')
   .get(authenticateAdmin, controller.getAllUserDetails)
-  .post(authenticateAdmin, controller.createUser);
+  .post(authenticateAdmin, validate(validation.createUser), controller.createUser);
 
 /**
 * @swagger
@@ -87,7 +90,7 @@ router.route('/users')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/email')
-  .get(authenticateAdmin, controller.getUserDetailsByEmail);
+  .get(authenticateAdmin, validate(validation.getUserDetailsByEmail), controller.getUserDetailsByEmail);
 
 /**
 * @swagger
@@ -166,9 +169,9 @@ router.route('/users/email')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/:id')
-  .get(authenticateAdmin, controller.getUserDetailsById)
-  .put(authenticateAdmin, controller.editUser)
-  .delete(authenticateAdmin, controller.deleteUser);
+  .get(authenticateAdmin, validate(validation.getUserDetailsById), controller.getUserDetailsById)
+  .put(authenticateAdmin, validate(validation.editUser), controller.editUser)
+  .delete(authenticateAdmin, validate(validation.deleteUser), controller.deleteUser);
 
 /**
 * @swagger
@@ -213,7 +216,7 @@ router.route('/users/:id')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/change-password')
-  .put(authenticateUser, controller.changePassword);
+  .put(authenticateUser, validate(validation.changePassword), controller.changePassword);
 
 /**
 * @swagger
@@ -241,6 +244,6 @@ router.route('/users/change-password')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/users/change-name')
-  .put(authenticateUser, controller.changeName);
+  .put(authenticateUser, validate(validation.changeName), controller.changeName);
 
 module.exports = router;
