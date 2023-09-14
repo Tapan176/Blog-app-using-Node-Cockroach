@@ -29,7 +29,7 @@ module.exports = {
   },
   getUserArticles: async (request, response, next) => {
     try {
-      const userId = request.session.user.id;
+      const { id: userId } = request.user;
       const responseBody = await services.getUserArticles(userId);
       response.status(200).json(responseBody);
     } catch (error) {

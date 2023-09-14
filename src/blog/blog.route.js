@@ -1,9 +1,11 @@
 const express = require('express');
 
 const router = express.Router();
+const { validate } = require('express-validation');
 
 const controller = require('./blog.controller');
 const { authenticateUser } = require('../middleware/passport');
+const validation = require('./blog.validation');
 
 /**
 * @swagger
@@ -58,7 +60,7 @@ const { authenticateUser } = require('../middleware/passport');
 */
 router.route('/blogs')
   .get(controller.getAllArticles)
-  .post(authenticateUser, controller.addArticle);
+  .post(authenticateUser, validate(validation.addArticle), controller.addArticle);
 
 /**
 * @swagger
@@ -82,7 +84,7 @@ router.route('/blogs')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/search')
-  .get(controller.searchArticle);
+  .get(validate(validation.searchArticle), controller.searchArticle);
 
 /**
 * @swagger
@@ -178,9 +180,9 @@ router.route('/blogs/myblogs')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/:blogId')
-  .get(controller.getArticlesById)
-  .put(authenticateUser, controller.editArticle)
-  .delete(authenticateUser, controller.deleteArticle);
+  .get(validate(validation.getArticlesById), controller.getArticlesById)
+  .put(authenticateUser, validate(validation.editArticle), controller.editArticle)
+  .delete(authenticateUser, validate(validation.deleteArticle), controller.deleteArticle);
 
 /**
 * @swagger
@@ -204,6 +206,6 @@ router.route('/blogs/:blogId')
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
 router.route('/blogs/categories/:categoryId')
-  .get(controller.getArticlesByCategory);
+  .get(validate(validation.getArticlesByCategory), controller.getArticlesByCategory);
 
 module.exports = router;
