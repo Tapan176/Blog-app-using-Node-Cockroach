@@ -184,6 +184,12 @@ router.route('/blogs/:blogId')
   .put(authenticateUser, validate(validation.editArticle), controller.editArticle)
   .delete(authenticateUser, validate(validation.deleteArticle), controller.deleteArticle);
 
+router.route('/blogs/:blogId/like')
+  .put(authenticateUser, controller.likeArticle);
+
+router.route('/blogs/:blogId/dislike')
+  .put(authenticateUser, controller.dislikeArticle);
+
 /**
 * @swagger
 * /blog/blogs/categories/:categoryId:
@@ -205,7 +211,7 @@ router.route('/blogs/:blogId')
 *       '500':
 *         $ref: 'components/errorContract.json#/internalServerError'
 */
-router.route('/blogs/categories/:categoryId')
+router.route('/categories/:categoryId/blogs')
   .get(validate(validation.getArticlesByCategory), controller.getArticlesByCategory);
 
 module.exports = router;

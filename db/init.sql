@@ -43,3 +43,11 @@ CREATE TABLE "categories" (
   "id" INT PRIMARY KEY DEFAULT unique_rowid(),
   "title" STRING(50) NOT NULL UNIQUE
 );
+
+CREATE TABLE "likedAndDisliked" (
+  "id" INT PRIMARY KEY DEFAULT unique_rowid(),
+  "userId" INT NOT NULL, 
+  "blogsLiked" INT ARRAY, 
+  "blogsDisliked" INT ARRAY, 
+  FOREIGN KEY ("userId") REFERENCES users ("id")
+);

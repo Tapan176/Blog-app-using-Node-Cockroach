@@ -1,3 +1,4 @@
+/* eslint-disable no-const-assign */
 module.exports = {
   selectAllArticles: async (dbClient) => {
     const sqlStmt = `
@@ -152,6 +153,111 @@ module.exports = {
             OR "user"."lastName" ILIKE '%' || $1 || '%'
             ;`;
     const parameters = [blogData.searchString];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  addUserInLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            INSERT INTO "likedAndDisliked"
+              (
+                "userId"
+              )
+            VALUES
+              (
+                $1
+              )
+            ;`;
+    const parameters = [blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  getUserFromLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            SELECT *
+            FROM "likedAndDisliked"
+            WHERE "userId" = $1
+            ;`;
+    const parameters = [blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  addLikeInLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "likedAndDisliked"
+            SET "blogsLiked" = $1
+            WHERE "userId" = $2
+            ;`;
+    const parameters = [blogData.blogsLiked, blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  removeLikeInLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "likedAndDisliked"
+            SET "blogsLiked" = $1
+            WHERE "userId" = $2
+            ;`;
+    const parameters = [blogData.blogsLiked, blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  addDislikeInLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "likedAndDisliked"
+            SET "blogsDisliked" = $1
+            WHERE "userId" = $2
+            ;`;
+    const parameters = [blogData.blogsDisliked, blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  removeDislikeInLikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "likedAndDisliked"
+            SET "blogsDisliked" = $1
+            WHERE "userId" = $2
+            ;`;
+    const parameters = [blogData.blogsDisliked, blogData.userId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  addLikeInBlogTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "articles"
+            SET "likes" = $1
+            WHERE "id" = $2
+            ;`;
+    const parameters = [blogData.likes, blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  removeLikeInBlogTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "articles"
+            SET "likes" = $1
+            WHERE "id" = $2
+            ;`;
+    const parameters = [blogData.likes, blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  addDislikeInBlogTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "articles"
+            SET "dislikes" = $1
+            WHERE "id" = $2
+            ;`;
+    const parameters = [blogData.dislikes, blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  removeDislikeInBlogTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "articles"
+            SET "dislikes" = $1
+            WHERE "id" = $2
+            ;`;
+    const parameters = [blogData.dislikes, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },

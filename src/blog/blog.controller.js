@@ -78,4 +78,24 @@ module.exports = {
       next(error);
     }
   },
+  likeArticle: async (request, response, next) => {
+    try {
+      const { id: userId } = request.user;
+      const { blogId } = request.params;
+      const responseBody = await services.likeArticle(userId, blogId);
+      response.status(200).json(responseBody);
+    } catch (error) {
+      next(error);
+    }
+  },
+  dislikeArticle: async (request, response, next) => {
+    try {
+      const { id: userId } = request.user;
+      const { blogId } = request.params;
+      const responseBody = await services.dislikeArticle(userId, blogId);
+      response.status(200).json(responseBody);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

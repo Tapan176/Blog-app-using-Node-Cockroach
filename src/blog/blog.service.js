@@ -190,4 +190,86 @@ module.exports = {
       dbClient.release();
     }
   },
+  likeArticle: async (userId, blogId) => {
+    const dbClient = await cockroachLib.dbCponnectionPool.connect();
+    try {
+      const checkUser = await dal.getUserFromLikesTable(dbClient, { userId });
+      if (checkUser.rowCount == 0) {
+        await dal.addUserInLikesTable(dbClient, { userId });
+      }
+
+      let likes = parseInt(((await dal.selectArticleById(dbClient, { blogId })).rows[0]).likes, 10);
+      let dislikes = parseInt(((await dal.selectArticleById(dbClient, { blogId })).rows[0]).dislikes, 10);
+
+      console.log(likes);
+
+      let blogsLiked = checkUser.rows[0].blogsLiked || [];
+      let blogsDisliked = checkUser.rows[0].blogsDisliked || [];
+
+      console.log(typeof(blogsLiked));
+      if (blogsLiked.length > 0) {
+        let blogAlreadyLiked = blogsLiked.indexOf(blogId);
+        let blogAlreadyDisliked = blogsDisliked.indexOf(blogId);
+
+        if (blogAlreadyLiked) {
+          likes -= 1;
+          blogsLiked.splice(blogAlreadyLiked, 1);
+          await dal.removeLikeInLikesTable(dbClient, { blogsLiked, userId });
+          await dal.removeLikeInBlogTable(dbClient, { likes, blogId });
+        }
+
+        if (blogAlreadyDisliked) {
+          dislikes -= 1;
+          blogsDisliked.splice(blogAlreadyDisliked, 1);
+          await dal.removeDislikeInLikesTable(dbClient, { blogsDisliked, userId });
+          await dal.removeDislikeInBlogTable(dbClient, { dislikes, blogId });
+        }
+
+        likes += 1;
+        blogsLiked.push(blogId);
+      } else {
+        likes += 1;
+        blogsLiked.push(blogId);
+      }
+
+      console.log(likes, blogsLiked);
+      await dal.addLikeInLikesTable(dbClient, { userId, blogId, blogsLiked });
+      await dal.addLikeInBlogTable(dbClient, { likes, blogId });
+
+      const queryResult = await dal.selectArticleById(dbClient, { userId });
+      return queryResult.rows;
+    } finally {
+      dbClient.release();
+    }
+  },
+  dislikeArticle: async (userId, blogId) => {
+    const dbClient = await cockroachLib.dbCponnectionPool.connect();
+    try {
+      const checkUser = await dal.getUserFromLikesTable(dbClient, { userId });
+      if (checkUser.rowCount == 0) {
+        await dal.addUserInLikesTable(dbClient, { userId });
+      }
+
+      const blogAlreadyLiked = (checkUser.rows[0].blogsLiked).indexOf(blogId);
+      const blogAlreadyDisliked = (checkUser.rows[0].blogsDisliked).indexOf(blogId);
+
+      if (blogAlreadyLiked) {
+        await dal.removeLikeInLikesTable(dbClient, { userId, blogId });
+        await dal.removeLikeInBlogTable(dbClient, { blogId });
+      }
+
+      if (blogAlreadyDisliked) {
+        await dal.removeDislikeInLikesTable(dbClient, { userId, blogId });
+        await dal.removeDislikeInBlogTable(dbClient, { blogId });
+      }
+
+      await dal.addDislikeInLikesTable(dbClient, { userId, blogId });
+      await dal.addDislikeInBlogTable(dbClient, { blogId });
+
+      const queryResult = await dal.selectArticleById(dbClient, { userId });
+      return queryResult.rows;
+    } finally {
+      dbClient.release();
+    }
+  },
 };
