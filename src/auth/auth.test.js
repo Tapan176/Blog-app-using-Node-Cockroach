@@ -16,7 +16,7 @@ describe('Authentication API Tests', () => {
   before((done) => {
     chai.request(app)
       .post('/auth/login')
-      .send({ email: 'mayur12@gmail.com', password: 'mayur@12' })
+      .send({ email: 'test@example.com', password: 'password123' })
       .end((err, res) => {
         const cookies = res.headers['set-cookie'].map((cookie) => cookie.split(';')[0]);
         sessionCookie = cookies.join('; ');
@@ -48,7 +48,7 @@ describe('Authentication API Tests', () => {
     it('should return status 204 and set a session cookie', (done) => {
       chai.request(app)
         .post('/auth/login')
-        .send({ email: 'mayur12@gmail.com', password: 'mayur@12' })
+        .send({ email: 'test@example.com', password: 'password123' })
         .end((err, res) => {
           expect(res).to.have.status(204);
           expect(res).to.have.cookie('connect.sid');
@@ -78,7 +78,7 @@ describe('Authentication API Tests', () => {
     it('should return status 200 and send a reset token', (done) => {
       chai.request(app)
         .post('/auth/forgotPassword')
-        .send({ email: 'ktapan176@gmail.com' })
+        .send({ email: 'test@example.com' })
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.have.property('code', 'reset_token_sent_successfully');
@@ -94,7 +94,7 @@ describe('Authentication API Tests', () => {
     it('should return status 200 and reset the password', (done) => {
       chai.request(app)
         .post('/auth/resetPassword?token=')
-        .send({ newPassword: 'Mayur@12', confirmPassword: 'Mayur@12' })
+        .send({ newPassword: 'password123', confirmPassword: 'password123' })
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.have.property('code', 'password_reset_successful');
