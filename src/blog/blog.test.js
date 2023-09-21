@@ -12,7 +12,7 @@ let sessionCookie;
 before((done) => {
   chai
     .request(app)
-    .post('/login')
+    .post('/auth/login')
     .send({
       email: 'test@example.com',
       password: 'Password@123',
@@ -26,9 +26,9 @@ before((done) => {
     });
 });
 
-describe('POST /createBlog', () => {
+describe('POST /blog/blogs', () => {
   it('should create a new blog and return status 201', (done) => {
-    const request = chai.request(app).post('/createBlog');
+    const request = chai.request(app).post('/blog/blogs');
     request.set('Cookie', sessionCookie);
     request.field('title', 'Test Blog');
     request.field('description', 'This is a test blog');
@@ -41,7 +41,7 @@ describe('POST /createBlog', () => {
   });
 });
 
-describe('GET /myBlogs', () => {
+describe('GET /blog/blogs/myBlogs', () => {
   before((done) => {
     chai
       .request(app)
@@ -62,7 +62,7 @@ describe('GET /myBlogs', () => {
   it('should return all blogs created by the user', (done) => {
     chai
       .request(app)
-      .get('/myBlogs')
+      .get('/blog/blogs/myBlogs')
       .set('Cookie', sessionCookie)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -72,11 +72,11 @@ describe('GET /myBlogs', () => {
   });
 });
 
-describe('GET /allBlogs', () => {
+describe('GET /blog/blogs', () => {
   it('should return all blogs sorted by created date', (done) => {
     chai
       .request(app)
-      .get('/allBlogs')
+      .get('/blog/blogs')
       .end((err, res) => {
         expect(res).to.have.status(200);
         done();
@@ -84,13 +84,13 @@ describe('GET /allBlogs', () => {
   });
 });
 
-describe('GET /blogs/:blogId', () => {
+describe('GET /blog/blogs/:blogId', () => {
   it('should return status 200 for an existing blog', (done) => {
     const validBlogId = '649e94ea08fd6848abd4a605';
 
     chai
       .request(app)
-      .get(`/blogs/${validBlogId}`)
+      .get(`/blog//blogs/${validBlogId}`)
       .end((err, res) => {
         if (err) {
           done(err);
@@ -106,7 +106,7 @@ describe('GET /blogs/:blogId', () => {
   });
 });
 
-describe('GET /searchBlogs', () => {
+describe('GET /blog/blogs/searchBlogs', () => {
   it('should return blogs matching the provided keyword', (done) => {
     const keyword = 'test';
 
@@ -125,11 +125,11 @@ describe('GET /searchBlogs', () => {
   });
 });
 
-describe('PUT /blogs/:blogId', () => {
+describe('PUT /blog/blogs/:blogId', () => {
   before((done) => {
     chai
       .request(app)
-      .post('/login')
+      .post('/auth/login')
       .send({
         email: 'prunthil@gmail.com',
         password: 'Prunthil@123',
@@ -152,7 +152,7 @@ describe('PUT /blogs/:blogId', () => {
 
     chai
       .request(app)
-      .put(`/blogs/${blogId}`)
+      .put(`/blog/blogs/${blogId}`)
       .set('Cookie', sessionCookie)
       .send(updatedBlog)
       .end((err, res) => {
@@ -172,11 +172,11 @@ describe('PUT /blogs/:blogId', () => {
   });
 });
 
-describe('DELETE /blogs/:blogId', () => {
+describe('DELETE /blog/blogs/:blogId', () => {
   before((done) => {
     chai
       .request(app)
-      .post('/login')
+      .post('/auth/login')
       .send({
         email: 'test@example.com',
         password: 'Password@123',
@@ -194,7 +194,7 @@ describe('DELETE /blogs/:blogId', () => {
     const blogId = '649e95bcc100a88ac46fb27e';
     chai
       .request(app)
-      .delete(`/blogs/${blogId}`)
+      .delete(`/blog/blogs/${blogId}`)
       .set('Cookie', sessionCookie)
       .end((err, res) => {
         try {

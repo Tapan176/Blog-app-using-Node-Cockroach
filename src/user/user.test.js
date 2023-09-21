@@ -13,7 +13,7 @@ describe('User API Endpoints', () => {
   before(async () => {
     chai
       .request(app)
-      .post('/login')
+      .post('/auth/login')
       .send({
         email: 'test@example.com',
         password: 'Password@123',

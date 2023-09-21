@@ -13,7 +13,7 @@ describe('Comment', () => {
   before((done) => {
     chai
       .request(app)
-      .post('/login')
+      .post('/auth/login')
       .send({
         email: 'test@example.com',
         password: 'Password@123',
@@ -25,6 +25,20 @@ describe('Comment', () => {
         sessionCookie = cookies.join('; ');
         done();
       });
+  });
+
+  describe('getComments', () => {
+    it('should get all comments of a particular blog', (done) => {
+      const blogId = '649e820e0d09e6df037b96a2';
+
+      chai
+        .request(app)
+        .get(`/blogs/${blogId}/comments`)
+        .end((err, res) => {
+          expect(res).to.have.status(201);
+          done();
+        });
+    });
   });
 
   describe('addComment', () => {
@@ -45,11 +59,12 @@ describe('Comment', () => {
 
   describe('updateComment', () => {
     it('should update an existing comment and return status 200', (done) => {
+      const blogId = '649e820e0d09e6df037b96a2';
       const commentId = '649ea322897eb772f6856f04';
 
       chai
         .request(app)
-        .put(`/comments/${commentId}`)
+        .put(`/blogs/${blogId}/comments/${commentId}`)
         .send({ comment: 'This is an updated comment from the test cases' })
         .set('Cookie', sessionCookie)
         .end((err, res) => {
@@ -63,8 +78,8 @@ describe('Comment', () => {
 
   describe('deleteComment', () => {
     it('should delete an existing comment and return status 200', (done) => {
-      const commentId = '649ea322897eb772f6856f04';
       const blogId = '649e820e0d09e6df037b96a2';
+      const commentId = '649ea322897eb772f6856f04';
 
       chai
         .request(app)
