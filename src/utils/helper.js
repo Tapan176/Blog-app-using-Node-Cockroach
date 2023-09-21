@@ -11,7 +11,7 @@ module.exports = {
     });
     return token;
   },
-  sendEmail: async (email, linkToSend, next) => {
+  sendEmail: async (email, emailSubject, emailbody, next) => {
     try {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -24,8 +24,8 @@ module.exports = {
       const mailOptions = {
         from: 'tapan.khokhariya109229@marwadiuniversity.ac.in',
         to: email,
-        subject: 'Reset Password',
-        text: `${linkToSend}`,
+        subject: `${emailSubject}`,
+        text: `${emailbody}`,
       };
 
       await transporter.sendMail(mailOptions, (error) => {

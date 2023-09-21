@@ -3,7 +3,8 @@ const services = require('./blog.service');
 module.exports = {
   getAllArticles: async (request, response, next) => {
     try {
-      const responseBody = await services.getAllArticles();
+      const { limit, page } = request.query;
+      const responseBody = await services.getAllArticles(limit, page);
       response.status(200).json(responseBody);
     } catch (error) {
       next(error);
@@ -21,7 +22,8 @@ module.exports = {
   getArticlesByCategory: async (request, response, next) => {
     try {
       const { categoryId } = request.params;
-      const responseBody = await services.getArticlesByCategory(categoryId);
+      const { limit, page } = request.query;
+      const responseBody = await services.getArticlesByCategory(categoryId, limit, page);
       response.status(200).json(responseBody);
     } catch (error) {
       next(error);
@@ -30,7 +32,8 @@ module.exports = {
   getUserArticles: async (request, response, next) => {
     try {
       const { id: userId } = request.user;
-      const responseBody = await services.getUserArticles(userId);
+      const { limit, page } = request.query;
+      const responseBody = await services.getUserArticles(userId, limit, page);
       response.status(200).json(responseBody);
     } catch (error) {
       next(error);
@@ -71,8 +74,8 @@ module.exports = {
   },
   searchArticle: async (request, response, next) => {
     try {
-      const { searchString } = request.query;
-      const responseBody = await services.searchArticle(searchString);
+      const { searchString, limit, page } = request.body;
+      const responseBody = await services.searchArticle(searchString, limit, page);
       response.status(200).json(responseBody);
     } catch (error) {
       next(error);
@@ -93,6 +96,28 @@ module.exports = {
       const { id: userId } = request.user;
       const { blogId } = request.params;
       const responseBody = await services.dislikeArticle(userId, blogId);
+      response.status(200).json(responseBody);
+    } catch (error) {
+      next(error);
+    }
+  },
+  rateAuthor: async (request, response, next) => {
+    try {
+      const { id: userId } = request.user;
+      const { blogId } = request.params;
+      const requestBody = request.body;
+      const responseBody = await services.rateAuthor(userId, blogId, requestBody);
+      response.status(200).json(responseBody);
+    } catch (error) {
+      next(error);
+    }
+  },
+  sendMessageToAuthor: async (request, response, next) => {
+    try {
+      const { id: userId } = request.user;
+      const { blogId } = request.params;
+      const requestBody = request.body;
+      const responseBody = await services.sendMessageToAuthor(userId, blogId, requestBody);
       response.status(200).json(responseBody);
     } catch (error) {
       next(error);

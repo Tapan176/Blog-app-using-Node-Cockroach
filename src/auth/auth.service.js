@@ -48,9 +48,9 @@ module.exports = {
 
       const resetToken = helper.generateToken({ email });
 
-      const linkToSend = `${process.env.RESET_PASSWORD_LINK}/resetPassword?token=${resetToken}`;
-
-      await helper.sendEmail(email, linkToSend);
+      const emailBody = `${process.env.RESET_PASSWORD_LINK}/resetPassword?token=${resetToken}`;
+      const emailSubject = 'Reset Password Link';
+      await helper.sendEmail(email, emailSubject, emailBody);
 
       return existingUser.rows[0];
     } finally {

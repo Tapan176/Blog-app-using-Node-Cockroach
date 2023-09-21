@@ -51,3 +51,26 @@ CREATE TABLE "likedAndDisliked" (
   "blogsDisliked" INT ARRAY, 
   FOREIGN KEY ("userId") REFERENCES users ("id")
 );
+
+CREATE TABLE "likedBlog" (
+  "userId" INT NOT NULL,
+  "blogId" INT NOT NULL,
+  FOREIGN KEY ("userId") REFERENCES USERS ("id"),
+  FOREIGN KEY ("blogId") REFERENCES ARTICLES ("id")
+);
+
+CREATE TABLE "DISLIKEDBLOG" (
+  "userId" INT NOT NULL,
+  "blogId" INT NOT NULL,
+  FOREIGN KEY ("userId") REFERENCES USERS ("id"),
+  FOREIGN KEY ("blogId") REFERENCES ARTICLES ("id")
+);
+
+CREATE TABLE "authorRatings" (
+  "userId" INT NOT NULL, 
+  "authorId" INT NOT NULL, 
+  "rating" INT NOT NULL, 
+  FOREIGN KEY ("userId") REFERENCES "users" ("id"), 
+  FOREIGN KEY ("authorId") REFERENCES "users" ("id"), 
+  CONSTRAINT "cc_user_rating" CHECK ("rating" > 0 AND "rating" < 6)
+);

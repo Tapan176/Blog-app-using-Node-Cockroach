@@ -190,6 +190,12 @@ router.route('/blogs/:blogId/like')
 router.route('/blogs/:blogId/dislike')
   .put(authenticateUser, controller.dislikeArticle);
 
+router.route('/blogs/:blogId/rate-author')
+  .post(authenticateUser, controller.rateAuthor);
+
+router.route('/blogs/:blogId/message-author')
+  .post(authenticateUser, controller.sendMessageToAuthor);
+
 /**
 * @swagger
 * /blog/blogs/categories/:categoryId:

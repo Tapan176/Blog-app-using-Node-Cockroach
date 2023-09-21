@@ -46,7 +46,7 @@ module.exports = {
     }),
   },
   searchArticle: {
-    query: Joi.object({
+    body: Joi.object({
       searchString: validationSchema.searchString,
     }),
   },

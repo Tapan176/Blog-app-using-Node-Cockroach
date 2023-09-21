@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 const { ValidationError } = require('express-validation');
 const errorMap = require('../constants/errorCodes');
 
@@ -10,7 +11,7 @@ module.exports = {
     const customError = errorMap[error.message];
     console.error(error);
 
-    const { statusCode } = customError;
+    const statusCode = customError.statusCode;
 
     response.status(statusCode).json({
       error: {

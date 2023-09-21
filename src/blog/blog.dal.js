@@ -1,21 +1,30 @@
 /* eslint-disable no-const-assign */
 module.exports = {
-  selectAllArticles: async (dbClient) => {
+  selectAllArticles: async (dbClient, limit, offset) => {
     const sqlStmt = `
             SELECT * 
             FROM "articles"
+            LIMIT $1
+            OFFSET $2
             ;`;
-    const queryResult = dbClient.query(sqlStmt);
+    const parameters = [limit, offset];
+    const queryResult = dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
   selectArticleById: async (dbClient, blogData) => {
     const sqlStmt = `
-            SELECT "article".* 
+            SELECT "article".*
                    ,"category"."title" AS "tag"
                    ,"user"."firstName"
                    ,"user"."lastName" 
                    ,"user"."email" 
-                   ,"comment".*
+                   ,"comment"."userId"
+                   ,"comment"."comment"
+                   ,"comment"."likes" As "commentLikes"
+                   ,"comment"."dislikes" As "commentDislikes"
+                   ,"comment"."reply"
+                   ,"comment"."createdAt"
+                   ,"comment"."updatedAt"
             FROM "articles" AS "article"
             JOIN "users" AS "user" 
             ON "article"."userId" = "user"."id"
@@ -29,23 +38,27 @@ module.exports = {
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  selectArticlesByCategoryId: async (dbClient, blogData) => {
+  selectArticlesByCategoryId: async (dbClient, blogData, limit, offset) => {
     const sqlStmt = `
             SELECT * 
             FROM "articles" 
             WHERE "categoryId" = $1
+            LIMIT $2
+            OFFSET $3
             ;`;
-    const parameters = [blogData.categoryId];
+    const parameters = [blogData.categoryId, limit, offset];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  selectArticlesByUserId: async (dbClient, blogData) => {
+  selectArticlesByUserId: async (dbClient, blogData, limit, offset) => {
     const sqlStmt = `
             SELECT * 
             FROM "articles" 
             WHERE "userId" = $1
+            LIMIT $2
+            OFFSET $3
             ;`;
-    const parameters = [blogData.userId];
+    const parameters = [blogData.userId, limit, offset];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
@@ -141,7 +154,7 @@ module.exports = {
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  searchArticle: async (dbClient, blogData) => {
+  searchArticle: async (dbClient, blogData, limit, offset) => {
     const sqlStmt = `
             SELECT "article".*
             FROM "articles" "article"
@@ -151,77 +164,86 @@ module.exports = {
             OR "article"."body" ILIKE '%' || $1 || '%'
             OR "user"."firstName" ILIKE '%' || $1 || '%'
             OR "user"."lastName" ILIKE '%' || $1 || '%'
+            LIMIT $2
+            OFFSET $3
             ;`;
-    const parameters = [blogData.searchString];
-    const queryResult = await dbClient.query(sqlStmt, parameters);
-    return queryResult;
-  },
-  addUserInLikesTable: async (dbClient, blogData) => {
-    const sqlStmt = `
-            INSERT INTO "likedAndDisliked"
-              (
-                "userId"
-              )
-            VALUES
-              (
-                $1
-              )
-            ;`;
-    const parameters = [blogData.userId];
+    const parameters = [blogData.searchString, limit, offset];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
   getUserFromLikesTable: async (dbClient, blogData) => {
     const sqlStmt = `
             SELECT *
-            FROM "likedAndDisliked"
-            WHERE "userId" = $1
+            FROM "likedBlog"
+            WHERE "userId" = $1 AND "blogId" = $2
             ;`;
-    const parameters = [blogData.userId];
+    const parameters = [blogData.userId, blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  getUserFromDislikesTable: async (dbClient, blogData) => {
+    const sqlStmt = `
+            SELECT *
+            FROM "dislikedBlog"
+            WHERE "userId" = $1 AND "blogId" = $2
+            ;`;
+    const parameters = [blogData.userId, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
   addLikeInLikesTable: async (dbClient, blogData) => {
     const sqlStmt = `
-            UPDATE "likedAndDisliked"
-            SET "blogsLiked" = $1
-            WHERE "userId" = $2
+            INSERT INTO "likedBlog"
+              (
+                "userId"
+                ,"blogId"
+              )
+            VALUES
+              (
+                $1
+                ,$2
+              )
             ;`;
-    const parameters = [blogData.blogsLiked, blogData.userId];
+    const parameters = [blogData.userId, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  removeLikeInLikesTable: async (dbClient, blogData) => {
+  removeLikeFromLikeTable: async (dbClient, blogData) => {
     const sqlStmt = `
-            UPDATE "likedAndDisliked"
-            SET "blogsLiked" = $1
-            WHERE "userId" = $2
+            DELETE FROM "likedBlog"
+            WHERE "userId" = $1 AND "blogId" = $2
             ;`;
-    const parameters = [blogData.blogsLiked, blogData.userId];
+    const parameters = [blogData.userId, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  addDislikeInLikesTable: async (dbClient, blogData) => {
+  addDislikeInDislikeTable: async (dbClient, blogData) => {
     const sqlStmt = `
-            UPDATE "likedAndDisliked"
-            SET "blogsDisliked" = $1
-            WHERE "userId" = $2
-            ;`;
-    const parameters = [blogData.blogsDisliked, blogData.userId];
+            INSERT INTO "dislikedBlog"
+              (
+                "userId"
+                ,"blogId"
+              )
+            VALUES
+              (
+                $1
+                ,$2
+              )
+              ;`;
+    const parameters = [blogData.userId, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  removeDislikeInLikesTable: async (dbClient, blogData) => {
+  removeDislikeFromDislikeTable: async (dbClient, blogData) => {
     const sqlStmt = `
-            UPDATE "likedAndDisliked"
-            SET "blogsDisliked" = $1
-            WHERE "userId" = $2
+            DELETE FROM "dislikedBlog"
+            WHERE "userId" = $1 AND "blogId" = $2
             ;`;
-    const parameters = [blogData.blogsDisliked, blogData.userId];
+    const parameters = [blogData.userId, blogData.blogId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  addLikeInBlogTable: async (dbClient, blogData) => {
+  updateLikeInBlogTable: async (dbClient, blogData) => {
     const sqlStmt = `
             UPDATE "articles"
             SET "likes" = $1
@@ -231,17 +253,7 @@ module.exports = {
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  removeLikeInBlogTable: async (dbClient, blogData) => {
-    const sqlStmt = `
-            UPDATE "articles"
-            SET "likes" = $1
-            WHERE "id" = $2
-            ;`;
-    const parameters = [blogData.likes, blogData.blogId];
-    const queryResult = await dbClient.query(sqlStmt, parameters);
-    return queryResult;
-  },
-  addDislikeInBlogTable: async (dbClient, blogData) => {
+  updateDislikeInBlogTable: async (dbClient, blogData) => {
     const sqlStmt = `
             UPDATE "articles"
             SET "dislikes" = $1
@@ -251,13 +263,62 @@ module.exports = {
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
-  removeDislikeInBlogTable: async (dbClient, blogData) => {
+  countLikes: async (dbClient, blogData) => {
     const sqlStmt = `
-            UPDATE "articles"
-            SET "dislikes" = $1
-            WHERE "id" = $2
+            SELECT COUNT("userId")
+            FROM "likedBlog"
+            WHERE "blogId" = $1
             ;`;
-    const parameters = [blogData.dislikes, blogData.blogId];
+    const parameters = [blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  countDislikes: async (dbClient, blogData) => {
+    const sqlStmt = `
+            SELECT COUNT("userId")
+            FROM "dislikedBlog"
+            WHERE "blogId" = $1
+            ;`;
+    const parameters = [blogData.blogId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  checkAuthorRating: async (dbClient, blogData) => {
+    const sqlStmt = `
+            SELECT *
+            FROM "authorRatings"
+            WHERE "userId" = $1 AND "authorId" = $2
+            ;`;
+    const parameters = [blogData.userId, blogData.authorId];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  rateAuthor: async (dbClient, blogData) => {
+    const sqlStmt = `
+            INSERT INTO "authorRatings"
+              (
+                "userId"
+                ,"authorId"
+                ,"rating"
+              )
+            VALUES
+              (
+                $1
+                ,$2
+                ,$3
+              )
+              ;`;
+    const parameters = [blogData.userId, blogData.authorId, blogData.rating];
+    const queryResult = await dbClient.query(sqlStmt, parameters);
+    return queryResult;
+  },
+  updateAuthorRatings: async (dbClient, blogData) => {
+    const sqlStmt = `
+            UPDATE "authorRatings"
+            SET "rating" = $1
+            WHERE "userId" = $2 AND "authorId" = $3
+            ;`;
+    const parameters = [blogData.rating, blogData.userId, blogData.authorId];
     const queryResult = await dbClient.query(sqlStmt, parameters);
     return queryResult;
   },
