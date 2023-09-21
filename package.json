@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon app.js",
+    "test": "mocha src/**/*.test.js",
     "docs": "swagger-jsdoc ./src/**/*.route.js -d docs/api/swaggerDefinition.js -o docs/api/openApiSpecs.json"
   },
   "dependencies": {
