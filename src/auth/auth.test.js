@@ -33,6 +33,7 @@ describe('Authentication API Tests', () => {
           lastName: 'User',
           email: 'test@example.com',
           password: 'password123',
+          confirmPassword: 'password123',
         })
         .end((err, res) => {
           expect(res).to.have.status(201);
