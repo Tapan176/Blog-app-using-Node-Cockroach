@@ -9,7 +9,7 @@
       "description": "Local server"
     }
   },
-  "basePath": "/",
+  "basePath": "/v1",
   "apis": [
     "./src/**/*.route.js"
   ],

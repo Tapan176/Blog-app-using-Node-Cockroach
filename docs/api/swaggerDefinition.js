@@ -1,14 +1,14 @@
 module.exports = {
   openapi: '3.0.0',
   info: {
-      title: 'Blog API Documentation',
-      description: 'API documentation for the Blog app',
-      version: '1.0.0',
+    title: 'Blog API Documentation',
+    description: 'API documentation for the Blog app',
+    version: '1.0.0',
     servers: {
-        url: 'http://localhost:3000',
-        description: 'Local server',
+      url: 'http://localhost:3000',
+      description: 'Local server',
     },
   },
-  basePath: '/',
+  basePath: '/v1',
   apis: ['./src/**/*.route.js'],
 };
