@@ -1,2 +1,3 @@
 .config
 src/utils/helper.js
+node_modules
