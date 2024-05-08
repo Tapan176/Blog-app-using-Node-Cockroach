@@ -16,13 +16,13 @@ module.exports = {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'your email',
-          pass: 'your password',
+          user: process.env.MAIL_ID,
+          pass: process.env.MAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: 'your email',
+        from: process.env.MAIL_ID,
         to: email,
         subject: `${emailSubject}`,
         text: `${emailbody}`,
