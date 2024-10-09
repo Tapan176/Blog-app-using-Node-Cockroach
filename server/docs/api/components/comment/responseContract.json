@@ -1,0 +1,77 @@
+{
+    "Comment": {
+        "type": "object",
+        "properties": {
+            "articleId": {
+                "type": "string",
+                "description": "The ID of the article to which comment belongs."
+            },
+            "comment": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "userId": {
+                "type": "string",
+                "description": "The ID of the user who owns the item."
+            },
+            "reply": {
+                "type": "object"
+            },
+            "likes": {
+                "type": "number"
+            },
+            "dislikes": {
+                "type": "number"
+            }
+        },
+        "required": [
+            "articleId",
+            "comment",
+            "userId",
+            "reply",
+            "likes",
+            "dislikes"
+        ]
+    },
+    "successfulRetrievalOfComments": {
+        "description": "Successful retrieval of all comments",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "array",
+                    "$ref": "#/Comment"
+                }
+            }
+        }
+    },
+    "successfulAdditionToComment": {
+        "description": "Successful addition of an comment",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Comment"
+                }
+            }
+        }
+    },
+    "successfulUpdationOfComment": {
+        "description": "Successful update of an comment",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Comment"
+                }
+            }
+        }
+    },
+    "successfulDeletionOfComment": {
+      "description": "Successful deletion of an comment"
+    }
+  }

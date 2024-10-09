@@ -1,0 +1,130 @@
+{
+    "AddUser": {
+        "type": "object",
+        "properties": {
+            "firstName": {
+                "type": "string"
+            },
+            "lastName": {
+                "type": "string"
+            },
+            "email": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "password": {
+                "type": "string",
+                "description": "The new password provided by the admin."
+            },
+            "confirmPassword": {
+                "type": "string",
+                "description": "The confirmation of the new password provided by the admin."
+            },
+            "role": {
+                "type": "string"
+            },
+            "isVerified": {
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "firstName",
+            "lastName",
+            "email",
+            "password",
+            "confirmPassword",
+            "role",
+            "isVerified"
+        ]
+    },
+    "UpdateUser": {
+        "type": "object",
+        "properties": {
+            "firstName": {
+                "type": "string"
+            },
+            "lastName": {
+                "type": "string"
+            },
+            "email": {
+                "type": "string"
+            },
+            "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "role": {
+                "type": "string"
+            },
+            "isVerified": {
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "firstName",
+            "lastName",
+            "email",
+            "role",
+            "isVerified"
+        ]
+    },
+    "GetUserByEmail": {
+        "type": "object",
+        "properties": {
+            "email": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "email"
+        ]
+    },
+    "UpdateUserPassword": {
+        "type": "object",
+        "properties": {
+            "oldPassword": {
+                "type": "string",
+                "description": "The old password provided by the user."
+            },
+            "newPassword": {
+                "type": "string",
+                "description": "The new password provided by the user."
+            },
+            "confirmNewPassword": {
+                "type": "string",
+                "description": "The confirmation of the new password provided by the user."
+            }
+        },
+        "required": [
+            "oldPassword",
+            "newPassword",
+            "confirmNewPassword"
+        ],
+        "additionalProperties": false
+    },
+    "UpdateUserName": {
+        "type": "object",
+        "properties": {
+            "firstName": {
+                "type": "string",
+                "description": "The updated firstname of the user."
+            },
+            "lastName": {
+                "type": "string",
+                "description": "The updated lastname of the user."
+            }
+        },
+        "required": [
+            "firstName",
+            "lastName"
+        ],
+        "additionalProperties": false
+    }
+}

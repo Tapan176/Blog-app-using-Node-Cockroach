@@ -1,0 +1,36 @@
+{
+  "name": "blog-platform",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js",
+    "dev": "nodemon app.js",
+    "test": "mocha src/**/*.test.js",
+    "docs": "swagger-jsdoc ./src/**/*.route.js -d docs/api/swaggerDefinition.js -o docs/api/openApiSpecs.json"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "dotenv-safe": "^8.2.0",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "express-validation": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.4",
+    "pg": "^8.11.3",
+    "sinon": "^16.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.8",
+    "chai-http": "^4.4.0",
+    "eslint": "^8.48.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.28.1",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  }
+}

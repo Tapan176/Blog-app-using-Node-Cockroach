@@ -1,0 +1,355 @@
+{
+    "Errors": {
+        "type": "object",
+        "properties": {
+            "code": {
+                "type": "string",
+                "description": "Error code"
+            },
+            "message": {
+                "type": "string",
+                "description": "Error message"
+            }
+        },
+        "required": [
+            "message",
+            "code"
+        ]
+    },
+    "passwordAndConfirmPasswordDoNotMatch": {
+        "description": "Password and confirm password do not match",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "userNotFound": {
+        "description": "User not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "incorrectPassword": {
+        "description": "Incorrect password",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "authenticationFailed": {
+        "description": "Authentication failed",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "userHasNotLogin": {
+        "description": "User has not login",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "logoutFailed": {
+        "description": "Logout failed",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "userAlreadyExists": {
+        "description": "User already exists",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "failedToRegisterUser": {
+        "description": "Failed to register user",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "newPasswordSameAsOldPassword": {
+        "description": "New password cannot be the same as the old password",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "failedToSendEmail": {
+        "description": "Failed to send email",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidToken": {
+        "description": "Invalid token",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidVerification": {
+        "description": "Invalid verification",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "addBlogFailed": {
+        "description": "Failed to add blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "fetchBlogsFailed": {
+        "description": "Failed to fetch blogs",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "updateBlogFailed": {
+        "description": "Failed to update blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "deleteBlogFailed": {
+        "description": "Failed to delete blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogAlreadyExist": {
+        "description": "Blog already exists for the user",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "userAlreadyExist": {
+        "description": "User already exists",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogNotFound": {
+        "description": "Blog not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "blogNotAuthorized": {
+        "description": "You are not authorized to update or delete this blog",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidCategoryId": {
+        "description": "Invalid category ID",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "categoryNotFound": {
+        "description": "Category not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "invalidSearchString": {
+        "description": "Invalid search string",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "commentNotFound": {
+        "description": "Comment not found",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/Errors"
+                }
+            }
+        }
+    },
+    "unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
+                        }
+                    },
+                    "required": [
+                        "code",
+                        "message"
+                    ]
+                }
+            }
+        }
+    },
+    "invalidRequest": {
+        "description": "Invalid request",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
+                        }
+                    },
+                    "required": [
+                        "message",
+                        "code"
+                    ]
+                }
+            }
+        }
+    },
+    "internalServerError": {
+        "description": "Internal server error",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
+                        }
+                    },
+                    "required": [
+                        "message",
+                        "code"
+                    ]
+                }
+            }
+        }
+    },
+    "badRequest": {
+        "description": "Bad request.",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
+                        }
+                    },
+                    "required": [
+                        "message",
+                        "code"
+                    ]
+                }
+            }
+        }
+    }
+}
