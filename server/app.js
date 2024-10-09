@@ -1,5 +1,5 @@
-const express = require('express');
 const dotenvResult = require('dotenv-safe').config({ path: './.config/.env', allowEmptyValues: true });
+const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');

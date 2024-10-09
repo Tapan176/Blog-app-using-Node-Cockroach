@@ -1,8 +1,5 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 module.exports = {
   generateToken: (payload) => {
